@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyến Xe Đại Số: Vượt Chướng Ngại Vật - Toán 9</title>
+    <!-- Import Playfair Display font with complete Vietnamese diacritics support -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. CORE STYLES & RESET
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            padding: 15px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1100px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 680px;
+            position: relative;
+        }
+
+        /* */
+        /* ==========================================================================
+           2. HEADER & PROGRESS NAVIGATION
+           ========================================================================== */
+        header {
+            background: #0f2027;
+            background: linear-gradient(to right, #203a43, #0f2027);
+            color: #fff;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #f39c12;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .game-title-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f1c40f;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .fuel-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 15px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .fuel-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ecf0f1;
+        }
+
+        .progress-bar-bg {
+            width: 140px;
+            height: 16px;
+            background: #34495e;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #7f8c8d;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #e67e22, #2ecc71);
+            transition: width 0.6s ease-in-out;
+        }
+
+        .fuel-text {
+            font-weight: 700;
+            color: #2ecc71;
+            min-width: 45px;
+        }
+
+        .stars-container {
+            display: flex;
+            gap: 6px;
+        }
+
+        .star-icon {
+            width: 28px;
+            height: 28px;
+            fill: #7f8c8d;
+            transition: transform 0.3s, fill 0.3s;
+        }
+
+        .star-icon.active {
+            fill: #f1c40f;
+            filter: drop-shadow(0 0 5px #f39c12);
+            animation: popStar 0.4s ease-out;
+        }
+
+        @keyframes popStar {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
+        /* ==========================================================================
+           3. ROADMAP / VISUAL TRACK
+           ========================================================================== */
+        .roadmap-wrapper {
+            background: #eef2f3;
+            padding: 15px 30px;
+            border-bottom: 2px solid #e0e0e0;
+            position: relative;
+        }
+
+        .roadmap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .road-line {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 8px;
+            background: #bdc3c7;
+            border-radius: 4px;
+            transform: translateY(-50%);
+            z-index: 1;
+        }
+
+        .road-line-progress {
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            height: 8px;
+            background: #3498db;
+            border-radius: 4px;
+            transform: translateY(-50%);
+            z-index: 1;
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+
+        .station-node {
+            position: relative;
+            z-index: 2;
+            background: #fff;
+            border: 3px solid #95a5a6;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .station-node.active {
+            border-color: #3498db;
+            color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            transform: scale(1.15);
+        }
+
+        .station-node.completed {
+            background: #2ecc71;
+            border-color: #27ae60;
+            color: #fff;
+        }
+
+        .bus-icon-tracker {
+            position: absolute;
+            top: -28px;
+            left: 5%;
+            transform: translateX(-50%);
+            z-index: 3;
+            transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .bus-svg {
+            width: 50px;
+            height: 35px;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+        }
+
+        /* */
+        /* ==========================================================================
+           4. SCREENS MANAGEMENT
+           ========================================================================== */
+        .screen {
+            display: none;
+            padding: 30px;
+            flex: 1;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .screen.active-screen {
+            display: flex;
+        }
+
+        /* --- INTRO SCREEN --- */
+        #screen-intro {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)),
+                        radial-gradient(circle, #3498db 10%, transparent 10.5%);
+            background-size: 100% 100%, 20px 20px;
+            gap: 25px;
+        }
+
+        .intro-hero {
+            max-width: 750px;
+        }
+
+        .intro-title {
+            font-size: 2.3rem;
+            color: #1a365d;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .intro-subtitle {
+            font-size: 1.2rem;
+            color: #4a5568;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .intro-card {
+            background: #f7fafc;
+            border-left: 6px solid #3182ce;
+            padding: 20px 25px;
+            border-radius: 8px;
+            text-align: left;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .intro-card h3 {
+            color: #2b6cb0;
+            margin-bottom: 10px;
+            font-size: 1.15rem;
+        }
+
+        .intro-card ul {
+            margin-left: 20px;
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60 0%, #2acc6e 100%);
+            color: white;
+            border: none;
+            padding: 16px 45px;
+            font-size: 1.35rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.5);
+            background: linear-gradient(135deg, #219653 0%, #27ae60 100%);
+        }
+
+        /* --- GAMEPLAY SCREEN --- */
+        .station-header {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #cbd5e0;
+            padding-bottom: 12px;
+        }
+
+        .station-badge {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 1px solid #bee3f8;
+        }
+
+        .station-topic {
+            font-size: 1.05rem;
+            color: #4a5568;
+            font-style: italic;
+        }
+
+        .problem-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 25px;
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: #2d3748;
+        }
+
+        /* MATH FORMULA FORMATTING */
+        .math-sys {
+            display: inline-flex;
+            align-items: center;
+            margin: 5px 10px;
+            vertical-align: middle;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.2rem;
+        }
+
+        .math-brace {
+            font-size: 2.6rem;
+            font-weight: 300;
+            margin-right: 5px;
+            line-height: 1;
+        }
+
+        .math-eqs {
+            display: inline-flex;
+            flex-direction: column;
+            text-align: left;
+            gap: 3px;
+        }
+
+        /* INTERACTION TYPES */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #cbd5e0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 1.15rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2d3748;
+        }
+
+        .option-btn:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            transform: translateY(-2px);
+        }
+
+        .option-btn.selected-wrong {
+            border-color: #e53e3e;
+            background: #fff5f5;
+            color: #c53030;
+            animation: shake 0.4s;
+        }
+
+        .option-btn.selected-correct {
+            border-color: #38a169;
+            background: #f0fff4;
+            color: #276749;
+            font-weight: bold;
+        }
+
+        .opt-prefix {
+            background: #edf2f7;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #4a5568;
+            flex-shrink: 0;
+        }
+
+        /* DRAG & DROP / CLICK MATCHING UPGRADED UI */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .matching-col {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            min-height: 280px;
+        }
+
+        .matching-title {
+            font-weight: bold;
+            color: #2b6cb0;
+            font-size: 1.05rem;
+            text-align: center;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .draggable-card {
+            background: #ffffff;
+            border: 2px dashed #3182ce;
+            border-radius: 10px;
+            padding: 14px;
+            cursor: grab;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            touch-action: none;
+        }
+
+        .draggable-card:hover {
+            background: #ebf8ff;
+            transform: translateY(-2px);
+            border-style: solid;
+        }
+
+        .draggable-card.selected-tap {
+            border: 3px solid #dd6b20 !important;
+            background: #fffaf0 !important;
+            box-shadow: 0 0 12px rgba(221, 107, 32, 0.6);
+            animation: pulseCard 1s infinite alternate;
+        }
+
+        @keyframes pulseCard {
+            from { transform: scale(1); }
+            to { transform: scale(1.03); }
+        }
+
+        .draggable-card.dragging {
+            opacity: 0.5;
+        }
+
+        .card-inner-text {
+            pointer-events: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-remove-card {
+            margin-top: 8px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-remove-card:hover {
+            background: #c53030;
+        }
+
+        .drop-zone {
+            background: #ffffff;
+            border: 2px dashed #a0aec0;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .drop-zone:hover {
+            border-color: #3182ce;
+            background: #f7fafc;
+        }
+
+        .drop-zone.drag-over {
+            background: #feebc8;
+            border-color: #dd6b20;
+            border-style: solid;
+        }
+
+        .drop-zone.matched {
+            border-style: solid;
+            border-color: #38a169;
+            background: #f0fff4;
+        }
+
+        .drop-zone-label {
+            font-weight: bold;
+            color: #4a5568;
+            margin-bottom: 8px;
+            text-align: center;
+            pointer-events: none;
+            font-size: 0.95rem;
+        }
+
+        .bin-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* FEEDBACK BOX */
+        .feedback-box {
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            display: none;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .feedback-box.correct {
+            display: block;
+            background: #c6f6d5;
+            border: 1px solid #9ae6b4;
+            color: #22543d;
+        }
+
+        .feedback-box.wrong {
+            display: block;
+            background: #feebc8;
+            border: 1px solid #fbd38d;
+            color: #742a2a;
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-next {
+            background: #3182ce;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-next:hover {
+            background: #2b6cb0;
+            transform: translateX(3px);
+        }
+
+        /* --- VICTORY / SUMMARY SCREEN --- */
+        #screen-summary {
+            text-align: center;
+            align-items: center;
+            background: #ffffff;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .victory-banner {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            width: 100%;
+            padding: 25px;
+            border-radius: 15px;
+            color: #742a2a;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .victory-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .badge-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2b6cb0;
+            background: #fff;
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .summary-diagram {
+            width: 100%;
+            max-width: 900px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: left;
+        }
+
+        .diagram-title {
+            text-align: center;
+            color: #2c5282;
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #bee3f8;
+            padding-bottom: 8px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .step-card {
+            background: #fff;
+            border-top: 5px solid #3182ce;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+        }
+
+        .step-card:nth-child(2) { border-top-color: #dd6b20; }
+        .step-card:nth-child(3) { border-top-color: #38a169; }
+
+        .step-num {
+            font-weight: bold;
+            color: #2b6cb0;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .step-card:nth-child(2) .step-num { color: #c05621; }
+        .step-card:nth-child(3) .step-num { color: #276749; }
+
+        .step-desc {
+            font-size: 0.95rem;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        /* ==========================================================================
+           5. ANIMATIONS & KEYFRAMES
+           ========================================================================== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        @media (max-width: 850px) {
+            .options-grid { grid-template-columns: 1fr; }
+            .matching-container { grid-template-columns: 1fr; }
+            .steps-grid { grid-template-columns: 1fr; }
+            .intro-title { font-size: 1.7rem; }
+            .status-bar { gap: 10px; }
+            .progress-bar-bg { width: 90px; }
+        }
+
+        /* --- INPUT NAME STYLES --- */
+        .name-input-container {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .name-input-label {
+            font-weight: bold;
+            color: #2b6cb0;
+            font-size: 1.15rem;
+        }
+
+        .name-input-field {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 1.15rem;
+            border: 2px solid #3182ce;
+            border-radius: 25px;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            color: #1a365d;
+            font-weight: 600;
+        }
+
+        .name-input-field:focus {
+            border-color: #2b6cb0;
+            box-shadow: 0 0 12px rgba(49, 130, 206, 0.4);
+            background: #f0fff4;
+        }
+
+        /* --- CERTIFICATE STYLES (ENHANCED TYPOGRAPHY & ELEGANT PALETTE) --- */
+        .certificate-wrapper {
+            background: linear-gradient(135deg, #ffffff 0%, #fcf8f0 50%, #ffffff 100%);
+            border: 12px double #c59b27;
+            outline: 2px solid #8a6002;
+            border-radius: 12px;
+            padding: 40px 35px;
+            margin: 25px auto;
+            width: 100%;
+            max-width: 840px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), inset 0 0 40px rgba(212, 175, 55, 0.12);
+            position: relative;
+            color: #1a252f;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .certificate-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(197, 155, 39, 0.4);
+            pointer-events: none;
+            border-radius: 6px;
+        }
+
+        .cert-header-national {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: #745106;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 3px;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .cert-header-motto {
+            font-size: 0.95rem;
+            letter-spacing: 1.2px;
+            color: #4a5568;
+            font-weight: 700;
+            margin-bottom: 22px;
+            font-family: 'Times New Roman', serif;
+            position: relative;
+            display: inline-block;
+            padding-bottom: 8px;
+        }
+
+        .cert-header-motto::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, #c59b27, transparent);
+        }
+
+        .cert-title {
+            font-size: 2.6rem;
+            font-weight: 900;
+            color: #0f2b48;
+            text-transform: uppercase;
+            font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, #0d233a 0%, #1a365d 60%, #8a6002 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cert-subtitle {
+            font-size: 1.15rem;
+            color: #5a6a80;
+            font-style: italic;
+            margin-bottom: 20px;
+            letter-spacing: normal;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+
+        /* Simplified Typography for inline text "xuất sắc" to seamlessly match line style */
+        .cert-xuatsac-inline {
+            font-weight: 800;
+            font-style: normal;
+            color: #b91c1c;
+            letter-spacing: normal;
+        }
+
+        .cert-grade-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 18px auto 22px auto;
+            padding: 8px 25px;
+            background: linear-gradient(135deg, #fffdf5 0%, #fef3c7 100%);
+            border: 2px solid #d97706;
+            border-radius: 30px;
+            max-width: 440px;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+        }
+
+        .cert-grade-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #78350f;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .cert-grade-badge-xuatsac {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.45rem;
+            font-weight: 900;
+            color: #b91c1c;
+            letter-spacing: normal;
+            text-shadow: 1px 1px 2px rgba(185, 28, 28, 0.15);
+            text-transform: uppercase;
+        }
+
+        .cert-award-to {
+            font-size: 1.05rem;
+            color: #718096;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .cert-name {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #936003;
+            font-family: 'Times New Roman', 'Georgia', serif;
+            border-bottom: 2px solid #d4af37;
+            display: inline-block;
+            padding: 4px 35px 8px 35px;
+            margin: 8px 0 22px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 1px 2px rgba(212, 175, 55, 0.2);
+        }
+
+        .cert-body {
+            font-size: 1.18rem;
+            line-height: 1.85;
+            color: #2d3748;
+            max-width: 700px;
+            margin: 0 auto 25px auto;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .cert-body strong {
+            color: #1a365d;
+        }
+
+        .cert-badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .cert-badge-item {
+            background: linear-gradient(135deg, #fffcf5 0%, #fef3d6 100%);
+            border: 1.5px solid #d4af37;
+            padding: 9px 22px;
+            border-radius: 25px;
+            font-weight: 700;
+            color: #5c4004;
+            font-size: 1rem;
+            box-shadow: 0 3px 8px rgba(212, 175, 55, 0.15);
+            letter-spacing: 0.3px;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 35px;
+            padding: 0 25px;
+        }
+
+        .cert-sign-box {
+            text-align: center;
+            min-width: 220px;
+        }
+
+        .cert-date {
+            font-size: 0.98rem;
+            color: #64748b;
+            font-style: italic;
+            font-family: 'Georgia', serif;
+            margin-bottom: 6px;
+        }
+
+        .cert-sign-title {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .cert-stamp {
+            margin-top: 15px;
+            font-family: 'Times New Roman', serif;
+            font-weight: 800;
+            color: #a81c1c;
+            border: 2px dashed #a81c1c;
+            padding: 6px 18px;
+            border-radius: 8px;
+            display: inline-block;
+            transform: rotate(-3deg);
+            background: rgba(168, 28, 28, 0.04);
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 6px rgba(168, 28, 28, 0.1);
+        }
+
+        .cert-certified-seal {
+            margin-top: 20px;
+            font-weight: 800;
+            color: #0b6bcb;
+            letter-spacing: 1px;
+            font-size: 1rem;
+            border: 2px solid #0b6bcb;
+            padding: 5px 14px;
+            border-radius: 6px;
+            display: inline-block;
+            background: rgba(11, 107, 203, 0.04);
+        }
+
+        /* PRINT MEDIA CONTROL */
+        @media print {
+            body {
+                background: none !important;
+                padding: 0 !important;
+            }
+            #game-container > header,
+            .roadmap-wrapper,
+            .summary-diagram,
+            .btn-primary,
+            .action-bar,
+            .victory-banner,
+            .btn-cert-actions {
+                display: none !important;
+            }
+            #game-container {
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .screen {
+                padding: 0 !important;
+            }
+            .certificate-wrapper {
+                box-shadow: none !important;
+                border: 8px double #d4af37 !important;
+                margin: 0 auto !important;
+                width: 100% !important;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <!-- HEADER WITH PROGRESS BAR & STARS -->
+    <header>
+        <div class="game-title-header">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#f1c40f">
+                <path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"/>
+            </svg>
+            <span>CHUYẾN XE ĐẠI SỐ 9</span>
+        </div>
+        <div class="status-bar">
+            <div class="fuel-container">
+                <span class="fuel-label">Nhiên liệu:</span>
+                <div class="progress-bar-bg">
+                    <div id="fuel-fill" class="progress-bar-fill"></div>
+                </div>
+                <span id="fuel-text" class="fuel-text">0%</span>
+            </div>
+            <div class="stars-container">
+                <svg class="star-icon" id="star-1" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="star-icon" id="star-2" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="star-icon" id="star-3" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="star-icon" id="star-4" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                <svg class="star-icon" id="star-5" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            </div>
+        </div>
+    </header>
+
+    <!-- ROADMAP INTERACTIVE TRACKER -->
+    <div class="roadmap-wrapper">
+        <div class="roadmap">
+            <div class="road-line"></div>
+            <div id="road-progress" class="road-line-progress"></div>
+            
+            <div id="bus-tracker" class="bus-icon-tracker">
+                <svg class="bus-svg" viewBox="0 0 64 64">
+                    <rect x="6" y="14" width="52" height="32" rx="6" fill="#f1c40f"/>
+                    <rect x="10" y="18" width="12" height="12" rx="2" fill="#34495e"/>
+                    <rect x="26" y="18" width="12" height="12" rx="2" fill="#34495e"/>
+                    <rect x="42" y="18" width="12" height="12" rx="2" fill="#34495e"/>
+                    <circle cx="16" cy="46" r="6" fill="#2c3e50"/>
+                    <circle cx="16" cy="46" r="2.5" fill="#ecf0f1"/>
+                    <circle cx="48" cy="46" r="6" fill="#2c3e50"/>
+                    <circle cx="48" cy="46" r="2.5" fill="#ecf0f1"/>
+                    <rect x="2" y="32" width="4" height="8" rx="1" fill="#e67e22"/>
+                </svg>
+            </div>
+
+            <div class="station-node active" id="node-1">1</div>
+            <div class="station-node" id="node-2">2</div>
+            <div class="station-node" id="node-3">3</div>
+            <div class="station-node" id="node-4">4</div>
+            <div class="station-node" id="node-5">5</div>
+        </div>
+    </div>
+
+    <!-- SCREEN 1: INTRO SCREEN -->
+    <div id="screen-intro" class="screen active-screen">
+        <div class="intro-hero">
+            <h1 class="intro-title">CHUYẾN XE ĐẠI SỐ 9</h1>
+            <p class="intro-subtitle">Luyện bài tập chương I - Tác giả: Bùi Thị Nghĩa</p>
+            
+            <div class="intro-card">
+                <h3>Nhiệm vụ của lớp học:</h3>
+                <ul>
+                    <li>Lái Chuyến xe Đại số đi qua <strong>5 Trạm dừng thử thách</strong> tương ứng với các dạng toán cốt lõi trong SGK Trang 24 - 25.</li>
+                    <li>Mỗi câu trả lời đúng sẽ nạp thêm <strong>20% Nhiên liệu Tri thức</strong> và thu thập <strong>1 Ngôi sao</strong>.</li>
+                    <li>Có thể <strong>Kéo-Thả</strong> hoặc <strong>Chạm chọn Thẻ rồi chạm chọn Thùng/Tình huống</strong> để xếp thẻ dễ dàng!</li>
+                </ul>
+            </div>
+
+            <div class="name-input-container">
+                <label for="student-name-input" class="name-input-label">✍️ Nhập họ và tên học sinh:</label>
+                <input type="text" id="student-name-input" class="name-input-field" placeholder="Ví dụ: Nguyễn Văn An" autocomplete="off">
+            </div>
+
+            <button class="btn-primary" onclick="startGame()">
+                <span>BẮT ĐẦU CHUYẾN ĐI</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.16 12l-8.31-8.31-1.42 1.42L16.86 11H5v2z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: GAMEPLAY SCREEN -->
+    <div id="screen-gameplay" class="screen">
+        <div>
+            <div class="station-header">
+                <span id="station-badge" class="station-badge">TRẠM 1</span>
+                <span id="station-topic" class="station-topic">Chủ đề</span>
+            </div>
+
+            <div id="problem-content" class="problem-box"></div>
+
+            <div id="interaction-area"></div>
+        </div>
+
+        <div>
+            <div id="feedback-box" class="feedback-box"></div>
+            <div class="action-bar">
+                <button id="btn-next" class="btn-next" onclick="nextStation()">
+                    <span>TIẾP TỤC HÀNH TRÌNH</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCREEN 3: VICTORY & SUMMARY SCREEN -->
+    <div id="screen-summary" class="screen">
+        <div class="victory-banner">
+            <h1 class="victory-title">CHUYẾN XE ĐÃ CÁN ĐÍCH AN TOÀN!</h1>
+            <p style="font-size: 1.1rem;">Chúc mừng lớp chúng ta đã hoàn thành xuất sắc chuyến hành trình Đại số 9.</p>
+            <div class="badge-title">DANH HIỆU: BẬC THẦY ĐẠI SỐ 9</div>
+        </div>
+
+        <div class="certificate-wrapper" id="certificate-card">
+            <div class="cert-header-national">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+            <div class="cert-header-motto">Độc lập - Tự do - Hạnh phúc</div>
+            
+            <div class="cert-title">GIẤY CHỨNG NHẬN</div>
+            <div class="cert-subtitle">Tuyên dương thành tích hoàn thành <span class="cert-xuatsac-inline">xuất sắc</span> trò chơi học tập</div>
+            
+            <div class="cert-award-to">Trao tặng cho học sinh</div>
+            <div class="cert-name" id="cert-student-name">NGUYỄN VĂN AN</div>
+            
+            <div class="cert-body">
+                Đã <span class="cert-xuatsac-inline">xuất sắc</span> vượt qua tất cả <strong>5 Trạm thử thách</strong> trong trò chơi
+                <br><strong style="font-size: 1.25rem; color: #0d233a;">"CHUYẾN XE ĐẠI SỐ 9"</strong>
+                <br><span style="font-size: 1.02rem; color: #64748b;">(Bài tập ôn tập cuối Chương I - SGK Toán 9 Tập 1)</span>
+            </div>
+
+            <div class="cert-grade-banner">
+                <span class="cert-grade-title">XẾP LOẠI TOÀN KHÓA:</span>
+                <span class="cert-grade-badge-xuatsac">✨ XUẤT SẮC ✨</span>
+            </div>
+
+            <div class="cert-badge-row">
+                <span class="cert-badge-item">⭐ Ngôi sao: <span id="cert-stars">5/5</span></span>
+                <span class="cert-badge-item">⛽ Nhiên liệu: <span id="cert-fuel">100%</span></span>
+                <span class="cert-badge-item">🏆 Danh hiệu: Bậc Thầy Đại Số 9</span>
+            </div>
+
+            <div class="cert-footer">
+                <div class="cert-sign-box">
+                    <div class="cert-date" id="cert-date-text">Ngày ... tháng ... năm ...</div>
+                    <div class="cert-sign-title">Tác giả chương trình</div>
+                    <div class="cert-stamp">Bùi Thị Nghĩa</div>
+                </div>
+                <div class="cert-sign-box">
+                    <div class="cert-date">Xác nhận thành tích</div>
+                    <div class="cert-sign-title">Giáo viên Toán 9</div>
+                    <div class="cert-certified-seal">[ ĐÃ CHỨNG NHẬN ]</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-cert-actions" style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin: 10px 0;">
+            <button class="btn-primary" style="background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%); box-shadow: 0 6px 20px rgba(49, 130, 206, 0.4);" onclick="printCertificate()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+                <span>IN / TẢI GIẤY CHỨNG NHẬN</span>
+            </button>
+            <button class="btn-primary" onclick="restartGame()">
+                <span>CHƠI LẠI TRÒ CHƠI</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+            </button>
+        </div>
+
+        <div class="summary-diagram">
+            <div class="diagram-title">SƠ ĐỒ TÓM TẮT: 3 BƯỚC GIẢI BÀI TOÁN BẰNG CÁCH LẬP HỆ PHƯƠNG TRÌNH</div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-num">BƯỚC 1: LẬP HỆ PHƯƠNG TRÌNH</div>
+                    <div class="step-desc">
+                        • Chọn 2 ẩn số và đặt điều kiện thích hợp cho chúng.<br>
+                        • Biểu diễn các đại lượng chưa biết theo các ẩn và đại lượng đã biết.<br>
+                        • Lập 2 phương trình biểu diễn mối quan hệ giữa các đại lượng.
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">BƯỚC 2: GIẢI HỆ PHƯƠNG TRÌNH</div>
+                    <div class="step-desc">
+                        • Sử dụng phương pháp thế hoặc phương pháp cộng đại số.<br>
+                        • Sử dụng phương pháp đặt ẩn phụ đối với hệ phương trình có dạng đặc biệt.
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">BƯỚC 3: TRẢ LỜI</div>
+                    <div class="step-desc">
+                        • Kiểm tra xem các nghiệm tìm được có thỏa mãn điều kiện của ẩn hay không.<br>
+                        • Kết luận đáp số cho bài toán thực tế.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="restartGame()">
+            <span>CHƠI LẠI TRÒ CHƠI</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    /* ==========================================================================
+       1. WEB AUDIO API SYNTHESIZER
+       ========================================================================== */
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new AudioContext();
+        }
+    }
+
+    function playSound(type) {
+        initAudio();
+        if (!audioCtx) return;
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'correct') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(659.25, now + 0.1);
+            osc.frequency.setValueAtTime(783.99, now + 0.2);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } else if (type === 'wrong') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, now);
+            osc.frequency.setValueAtTime(130, now + 0.15);
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        } else if (type === 'victory') {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, idx) => {
+                const subOsc = audioCtx.createOscillator();
+                const subGain = audioCtx.createGain();
+                subOsc.connect(subGain);
+                subGain.connect(audioCtx.destination);
+                subOsc.type = 'triangle';
+                subOsc.frequency.value = freq;
+                subGain.gain.setValueAtTime(0.2, now + idx * 0.12);
+                subGain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.3);
+                subOsc.start(now + idx * 0.12);
+                subOsc.stop(now + idx * 0.12 + 0.3);
+            });
+        }
+    }
+
+    /* ==========================================================================
+       2. SGK GAME DATA (100% EXACT DATA SGK TOÁN 9 TRANG 24 - 25)
+       ========================================================================== */
+    const stationsData = [
+        // TRẠM 1: BÀI 1.19 SGK TRANG 24
+        {
+            id: 1,
+            badge: "TRẠM 1: TRẠM KIỂM NGHIỆM",
+            topic: "Bài 1.19 (SGK Trang 24) - Kiểm tra nghiệm của hệ phương trình",
+            problemHtml: `
+                Cặp số nào sau đây là nghiệm của hệ phương trình:
+                <div class="math-sys">
+                    <span class="math-brace">{</span>
+                    <div class="math-eqs">
+                        <span>5x + 7y = -1</span>
+                        <span>3x + 2y = -5</span>
+                    </div>
+                </div> ?
+            `,
+            type: "mcq",
+            options: [
+                { id: "A", text: "(-1; 1)", correct: false },
+                { id: "B", text: "(-3; 2)", correct: true },
+                { id: "C", text: "(2; -3)", correct: false },
+                { id: "D", text: "(5; 5)", correct: false }
+            ],
+            correctFeedback: "Chính xác! Cặp số (-3; 2) thỏa mãn cả hai phương trình: 5(-3) + 7(2) = -1 và 3(-3) + 2(2) = -5.",
+            wrongHint: "Hãy thử thay x = -3 và y = 2 vào CẢ HAI phương trình xem có thỏa mãn không nhé!"
+        },
+        // TRẠM 2: BÀI 1.20 SGK TRANG 24
+        {
+            id: 2,
+            badge: "TRẠM 2: TRẠM ĐƯỜNG THẲNG",
+            topic: "Bài 1.20 (SGK Trang 24) - Điểm thuộc đường thẳng trong mặt phẳng Oxy",
+            problemHtml: `
+                Trên mặt phẳng tọa độ Oxy, cho các điểm A(1; 2), B(5; 6), C(2; 3), D(-1; -1).<br>
+                Đường thẳng <strong>4x - 3y = -1</strong> đi qua hai điểm nào trong các điểm đã cho?
+            `,
+            type: "mcq",
+            options: [
+                { id: "A", text: "A và B", correct: false },
+                { id: "B", text: "B và C", correct: false },
+                { id: "C", text: "C và D", correct: true },
+                { id: "D", text: "D và A", correct: false }
+            ],
+            correctFeedback: "Xuất sắc! Điểm C(2; 3) có 4(2) - 3(3) = -1 và điểm D(-1; -1) có 4(-1) - 3(-1) = -1.",
+            wrongHint: "Thay tọa độ từng điểm vào vế trái 4x - 3y. Ví dụ điểm C(2; 3): 4(2) - 3(3) = 8 - 9 = -1!"
+        },
+        // TRẠM 3: BÀI 1.21 & 1.22 SGK TRANG 24
+        {
+            id: 3,
+            badge: "TRẠM 3: TRẠM SỐ NGHIỆM",
+            topic: "Bài 1.21 & 1.22 (SGK Trang 24) - Phân loại số nghiệm của hệ phương trình",
+            problemHtml: `
+                Kéo-Thả (hoặc Chạm chọn Thẻ rồi Chạm chọn Thùng) để phân loại 2 Hệ phương trình sau vào đúng Thùng thuộc tính:
+            `,
+            type: "matching_bins",
+            cards: [
+                {
+                    id: "sys1",
+                    html: `Hệ (I) (Bài 1.21): <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>1,5x - 0,6y = 0,3</span><span>-2x + y = -2</span></div></div>`,
+                    targetBin: "bin-1"
+                },
+                {
+                    id: "sys2",
+                    html: `Hệ (II) (Bài 1.22): <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>0,6x + 0,3y = 1,8</span><span>2x + y = -6</span></div></div>`,
+                    targetBin: "bin-2"
+                }
+            ],
+            bins: [
+                { id: "bin-1", title: "Có 1 nghiệm duy nhất (-3; -8)" },
+                { id: "bin-2", title: "Vô nghiệm" },
+                { id: "bin-3", title: "Vô số nghiệm" }
+            ],
+            correctFeedback: "Chính xác! Hệ (I) có 1 nghiệm duy nhất (-3; -8). Hệ (II) vô nghiệm vì phương trình (1) tương đương 2x + y = 6 (mâu thuẫn với 2x + y = -6).",
+            wrongHint: "Hệ (I) giải ra x = -3, y = -8. Hệ (II) nhân phương trình (1) với 10/3 sẽ thấy mâu thuẫn!"
+        },
+        // TRẠM 4: BÀI 1.24c SGK TRANG 24
+        {
+            id: 4,
+            badge: "TRẠM 4: TRẠM ẨN PHỤ",
+            topic: "Bài 1.24c (SGK Trang 24) - Phương pháp đặt ẩn phụ",
+            problemHtml: `
+                Cho hệ phương trình: 
+                <div class="math-sys">
+                    <span class="math-brace">{</span>
+                    <div class="math-eqs">
+                        <span>2(x - 2) + 3(1 + y) = -2</span>
+                        <span>3(x - 2) - 2(1 + y) = -3</span>
+                    </div>
+                </div><br>
+                <strong>Bước 1:</strong> Đặt u = x - 2 và v = 1 + y. Ta thu được hệ phương trình mới theo u và v là gì?
+            `,
+            type: "substep",
+            options: [
+                {
+                    id: "opt1",
+                    html: `Phương án 1: <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>2u + 3v = -2</span><span>3u - 2v = -3</span></div></div>`,
+                    correct: true
+                },
+                {
+                    id: "opt2",
+                    html: `Phương án 2: <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>2u - 3v = -2</span><span>3u + 2v = -3</span></div></div>`,
+                    correct: false
+                },
+                {
+                    id: "opt3",
+                    html: `Phương án 3: <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>3u + 2v = -2</span><span>2u - 3v = -3</span></div></div>`,
+                    correct: false
+                }
+            ],
+            step2Html: `
+                <div style="margin-top:15px; padding:15px; background:#ebf8ff; border-radius:8px; border-left:4px solid #3182ce;">
+                    <strong>Bước 2:</strong> Giải hệ theo u và v:<br>
+                    Cộng đại số ta tìm được <strong>u = -1</strong> và <strong>v = 0</strong>.<br>
+                    Suy ra: x - 2 = -1 ⇒ <strong>x = 1</strong>; và 1 + y = 0 ⇒ <strong>y = -1</strong>.<br>
+                    Nghiệm của hệ phương trình ban đầu là: <strong>(x; y) = (1; -1)</strong>.
+                </div>
+            `,
+            correctFeedback: "Tuyệt vời! Đặt u = x - 2 và v = 1 + y giúp chuyển hệ ban đầu về hệ dạng cơ bản 2u + 3v = -2 và 3u - 2v = -3.",
+            wrongHint: "Thay cụm (x - 2) bởi u và cụm (1 + y) bởi v, giữ nguyên dấu và hệ số ban đầu!"
+        },
+        // TRẠM 5: BÀI 1.26 & 1.28 SGK TRANG 25
+        {
+            id: 5,
+            badge: "TRẠM 5: TRẠM THỰC TẾ",
+            topic: "Bài 1.26 & 1.28 (SGK Trang 25) - Mô hình hóa bài toán thực tế",
+            problemHtml: `
+                Hãy ghép Tình huống bài toán thực tế (Cột bên trái) với Hệ phương trình tương ứng (Cột bên phải):
+            `,
+            type: "matching_pairs",
+            situations: [
+                {
+                    id: "sit1",
+                    text: "Tình huống 1 (Bài 1.26 - Nông nghiệp): Cánh đồng 160 ha gồm 60 ha lúa mới (năng suất y tấn/ha) và 100 ha lúa cũ (năng suất x tấn/ha). Thu hoạch 7 ha lúa mới nhiều hơn 8 ha lúa cũ là 2 tấn. Tổng sản lượng cả cánh đồng là 860 tấn.",
+                    targetCard: "hp1"
+                },
+                {
+                    id: "sit2",
+                    text: "Tình huống 2 (Bài 1.28 - Thuế VAT): Gọi x, y (triệu đồng) là giá tiền chưa thuế của 2 loại hàng. Tiền trả gồm thuế VAT (10% loại 1, 8% loại 2) là 21,7 triệu. Nếu thuế VAT 9% cho cả 2 loại thì tổng tiền là 21,8 triệu.",
+                    targetCard: "hp2"
+                }
+            ],
+            eqCards: [
+                {
+                    id: "hp1",
+                    html: `Thẻ HP1: <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>7y - 8x = 2</span><span>100x + 60y = 860</span></div></div>`
+                },
+                {
+                    id: "hp2",
+                    html: `Thẻ HP2: <div class="math-sys"><span class="math-brace">{</span><div class="math-eqs"><span>1,1x + 1,08y = 21,7</span><span>1,09x + 1,09y = 21,8</span></div></div>`
+                }
+            ],
+            correctFeedback: "Xuất sắc! Bạn đã lập chính xác 2 hệ phương trình mô hình hóa bài toán thực tế trong SGK Trang 25!",
+            wrongHint: "Chú ý: Lúa mới 7y nhiều hơn lúa cũ 8x là 2 tấn nên có 7y - 8x = 2. Mua hàng thuế 10% tức giá tiền là 1,1x!"
+        }
+    ];
+
+    /* ==========================================================================
+       3. GAME STATE MANAGEMENT
+       ========================================================================== */
+    let currentStationIndex = 0;
+    let fuelPercent = 0;
+    let currentSelectedCard = null;
+    let binMatches = {};
+    let studentName = "";
+
+    function updateProgressUI() {
+        const fuelFill = document.getElementById('fuel-fill');
+        const fuelText = document.getElementById('fuel-text');
+        fuelFill.style.width = fuelPercent + '%';
+        fuelText.innerText = fuelPercent + '%';
+
+        const starsCount = Math.floor(fuelPercent / 20);
+        for (let i = 1; i <= 5; i++) {
+            const star = document.getElementById(`star-${i}`);
+            if (i <= starsCount) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        }
+
+        const roadProgress = document.getElementById('road-progress');
+        const busTracker = document.getElementById('bus-tracker');
+
+        const stepPercentage = (currentStationIndex / 4) * 90;
+        roadProgress.style.width = stepPercentage + '%';
+        busTracker.style.left = (5 + stepPercentage) + '%';
+
+        for (let i = 1; i <= 5; i++) {
+            const node = document.getElementById(`node-${i}`);
+            node.classList.remove('active', 'completed');
+            if (i < currentStationIndex + 1) {
+                node.classList.add('completed');
+            } else if (i === currentStationIndex + 1) {
+                node.classList.add('active');
+            }
+        }
+    }
+
+    function showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(screenId).classList.add('active-screen');
+    }
+
+    function startGame() {
+        const nameInput = document.getElementById('student-name-input');
+        const enteredName = nameInput ? nameInput.value.trim() : "";
+        
+        if (!enteredName) {
+            alert("Vui lòng nhập Họ và tên học sinh trước khi bắt đầu!");
+            if (nameInput) nameInput.focus();
+            return;
+        }
+
+        studentName = enteredName;
+        initAudio();
+        currentStationIndex = 0;
+        fuelPercent = 0;
+        updateProgressUI();
+        showScreen('screen-gameplay');
+        loadStation(currentStationIndex);
+    }
+
+    function restartGame() {
+        showScreen('screen-intro');
+    }
+
+    function showSummaryScreen() {
+        playSound('victory');
+        
+        // Populate certificate fields
+        document.getElementById('cert-student-name').innerText = studentName;
+        document.getElementById('cert-stars').innerText = `${Math.floor(fuelPercent / 20)}/5`;
+        document.getElementById('cert-fuel').innerText = `${fuelPercent}%`;
+        
+        const now = new Date();
+        const dateStr = `Ngày ${now.getDate()} tháng ${now.getMonth() + 1} năm ${now.getFullYear()}`;
+        document.getElementById('cert-date-text').innerText = dateStr;
+
+        showScreen('screen-summary');
+    }
+
+    function printCertificate() {
+        window.print();
+    }
+
+    function loadStation(index) {
+        const data = stationsData[index];
+
+        document.getElementById('station-badge').innerText = data.badge;
+        document.getElementById('station-topic').innerText = data.topic;
+        document.getElementById('problem-content').innerHTML = data.problemHtml;
+
+        const interactionArea = document.getElementById('interaction-area');
+        interactionArea.innerHTML = '';
+
+        const feedbackBox = document.getElementById('feedback-box');
+        feedbackBox.className = 'feedback-box';
+        feedbackBox.style.display = 'none';
+
+        const btnNext = document.getElementById('btn-next');
+        btnNext.style.display = 'none';
+
+        currentSelectedCard = null;
+        binMatches = {};
+
+        if (data.type === 'mcq') {
+            renderMCQ(data, interactionArea);
+        } else if (data.type === 'matching_bins') {
+            renderMatchingBins(data, interactionArea);
+        } else if (data.type === 'substep') {
+            renderSubstep(data, interactionArea);
+        } else if (data.type === 'matching_pairs') {
+            renderMatchingPairs(data, interactionArea);
+        }
+    }
+
+    function renderMCQ(data, container) {
+        const grid = document.createElement('div');
+        grid.className = 'options-grid';
+
+        data.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = `<span class="opt-prefix">${opt.id}</span> <span>${opt.text}</span>`;
+            btn.onclick = () => handleMCQChoice(opt, btn, data);
+            grid.appendChild(btn);
+        });
+
+        container.appendChild(grid);
+    }
+
+    function handleMCQChoice(selectedOpt, btnElement, data) {
+        const feedbackBox = document.getElementById('feedback-box');
+        const btnNext = document.getElementById('btn-next');
+
+        if (selectedOpt.correct) {
+            playSound('correct');
+            document.querySelectorAll('.option-btn').forEach(b => b.onclick = null);
+            btnElement.classList.add('selected-correct');
+            
+            feedbackBox.className = 'feedback-box correct';
+            feedbackBox.innerHTML = `<strong>Chúc mừng!</strong> ${data.correctFeedback}`;
+            
+            grantReward();
+            btnNext.style.display = 'inline-flex';
+        } else {
+            playSound('wrong');
+            btnElement.classList.add('selected-wrong');
+            
+            feedbackBox.className = 'feedback-box wrong';
+            feedbackBox.innerHTML = `<strong>Chưa chính xác!</strong> Gợi ý: ${data.wrongHint}`;
+        }
+    }
+
+    /* ==========================================================================
+       STATION 3: UPGRADED MATCHING BINS (DRAG & TOUCH TAP SUPPORT)
+       ========================================================================== */
+    function renderMatchingBins(data, container) {
+        binMatches = {};
+        const wrapper = document.createElement('div');
+        wrapper.className = 'matching-container';
+
+        // Cards Pool Column
+        const cardsCol = document.createElement('div');
+        cardsCol.className = 'matching-col';
+        cardsCol.id = 'cards-pool-3';
+        cardsCol.innerHTML = `<div class="matching-title">Thẻ Hệ Phương Trình (Kéo hoặc Chạm chọn)</div>`;
+
+        data.cards.forEach(card => {
+            const cDiv = createDraggableCard(card, data);
+            cardsCol.appendChild(cDiv);
+        });
+
+        // Bins Column
+        const binsCol = document.createElement('div');
+        binsCol.className = 'matching-col';
+        binsCol.innerHTML = `<div class="matching-title">Thùng Thuộc Tính (Thả hoặc Chạm để xếp)</div>`;
+
+        data.bins.forEach(bin => {
+            const bDiv = document.createElement('div');
+            bDiv.className = 'drop-zone';
+            bDiv.id = bin.id;
+            bDiv.setAttribute('data-bin-id', bin.id);
+            bDiv.innerHTML = `
+                <div class="drop-zone-label">${bin.title}</div>
+                <div class="bin-content" id="bin-content-${bin.id}"></div>
+            `;
+
+            // Native Drag over & Drop
+            bDiv.ondragover = (e) => {
+                e.preventDefault();
+                bDiv.classList.add('drag-over');
+            };
+            bDiv.ondragleave = () => bDiv.classList.remove('drag-over');
+            bDiv.ondrop = (e) => {
+                e.preventDefault();
+                bDiv.classList.remove('drag-over');
+                const cardId = e.dataTransfer.getData('text/plain');
+                placeCardInBin(cardId, bin.id, data);
+            };
+
+            // Click / Tap Target
+            bDiv.onclick = (e) => {
+                if (e.target.classList.contains('btn-remove-card')) return;
+                if (currentSelectedCard) {
+                    placeCardInBin(currentSelectedCard, bin.id, data);
+                }
+            };
+
+            binsCol.appendChild(bDiv);
+        });
+
+        wrapper.appendChild(cardsCol);
+        wrapper.appendChild(binsCol);
+        container.appendChild(wrapper);
+    }
+
+    function createDraggableCard(card, data) {
+        const cDiv = document.createElement('div');
+        cDiv.className = 'draggable-card';
+        cDiv.id = card.id;
+        cDiv.draggable = true;
+        cDiv.innerHTML = `<div class="card-inner-text">${card.html}</div>`;
+
+        // Native Drag Start
+        cDiv.ondragstart = (e) => {
+            e.dataTransfer.setData('text/plain', card.id);
+            cDiv.classList.add('dragging');
+        };
+        cDiv.ondragend = () => {
+            cDiv.classList.remove('dragging');
+        };
+
+        // Click / Tap Selection
+        cDiv.onclick = (e) => {
+            e.stopPropagation();
+            if (cDiv.parentElement.classList.contains('bin-content')) return;
+
+            document.querySelectorAll('.draggable-card').forEach(c => c.classList.remove('selected-tap'));
+            if (currentSelectedCard === card.id) {
+                currentSelectedCard = null;
+            } else {
+                cDiv.classList.add('selected-tap');
+                currentSelectedCard = card.id;
+            }
+        };
+
+        // Touch Drag Fallback
+        cDiv.ontouchend = (e) => {
+            const touch = e.changedTouches[0];
+            const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            if (elemBelow) {
+                const dropZone = elemBelow.closest('.drop-zone');
+                if (dropZone) {
+                    const binId = dropZone.getAttribute('data-bin-id');
+                    if (binId) {
+                        placeCardInBin(card.id, binId, data);
+                    }
+                }
+            }
+        };
+
+        return cDiv;
+    }
+
+    function placeCardInBin(cardId, binId, data) {
+        const cardElem = document.getElementById(cardId);
+        const targetBinContent = document.getElementById(`bin-content-${binId}`);
+        if (!cardElem || !targetBinContent) return;
+
+        // Clean previous match record
+        Object.keys(binMatches).forEach(cId => {
+            if (cId === cardId) delete binMatches[cId];
+        });
+
+        binMatches[cardId] = binId;
+        cardElem.classList.remove('selected-tap', 'dragging');
+
+        // Add undo button if not present
+        let removeBtn = cardElem.querySelector('.btn-remove-card');
+        if (!removeBtn) {
+            removeBtn = document.createElement('button');
+            removeBtn.className = 'btn-remove-card';
+            removeBtn.innerText = '✕ Cất lại';
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeCardFromBin(cardId, data);
+            };
+            cardElem.appendChild(removeBtn);
+        }
+
+        targetBinContent.appendChild(cardElem);
+        currentSelectedCard = null;
+
+        // Evaluate when all cards are placed
+        if (Object.keys(binMatches).length === data.cards.length) {
+            evaluateMatchingBins(data);
+        }
+    }
+
+    function removeCardFromBin(cardId, data) {
+        delete binMatches[cardId];
+        const cardElem = document.getElementById(cardId);
+        const pool = document.getElementById('cards-pool-3');
+        if (cardElem && pool) {
+            const removeBtn = cardElem.querySelector('.btn-remove-card');
+            if (removeBtn) removeBtn.remove();
+            cardElem.classList.remove('selected-tap');
+            pool.appendChild(cardElem);
+        }
+    }
+
+    function evaluateMatchingBins(data) {
+        let allCorrect = data.cards.every(c => binMatches[c.id] === c.targetBin);
+        const feedbackBox = document.getElementById('feedback-box');
+        const btnNext = document.getElementById('btn-next');
+
+        if (allCorrect) {
+            playSound('correct');
+            feedbackBox.className = 'feedback-box correct';
+            feedbackBox.innerHTML = `<strong>Chính xác!</strong> ${data.correctFeedback}`;
+            grantReward();
+            btnNext.style.display = 'inline-flex';
+        } else {
+            playSound('wrong');
+            feedbackBox.className = 'feedback-box wrong';
+            feedbackBox.innerHTML = `<strong>Chưa đúng!</strong> Gợi ý: ${data.wrongHint}`;
+        }
+    }
+
+    function renderSubstep(data, container) {
+        const grid = document.createElement('div');
+        grid.className = 'options-grid';
+        grid.style.gridTemplateColumns = '1fr';
+
+        data.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt.html;
+            btn.onclick = () => handleSubstepChoice(opt, btn, data, container);
+            grid.appendChild(btn);
+        });
+
+        container.appendChild(grid);
+    }
+
+    function handleSubstepChoice(opt, btnElement, data, container) {
+        const feedbackBox = document.getElementById('feedback-box');
+        const btnNext = document.getElementById('btn-next');
+
+        if (opt.correct) {
+            playSound('correct');
+            document.querySelectorAll('.option-btn').forEach(b => b.onclick = null);
+            btnElement.classList.add('selected-correct');
+
+            const step2Div = document.createElement('div');
+            step2Div.innerHTML = data.step2Html;
+            container.appendChild(step2Div);
+
+            feedbackBox.className = 'feedback-box correct';
+            feedbackBox.innerHTML = `<strong>Chính xác Bước 1!</strong> ${data.correctFeedback}`;
+            
+            grantReward();
+            btnNext.style.display = 'inline-flex';
+        } else {
+            playSound('wrong');
+            btnElement.classList.add('selected-wrong');
+            feedbackBox.className = 'feedback-box wrong';
+            feedbackBox.innerHTML = `<strong>Chưa đúng!</strong> Gợi ý: ${data.wrongHint}`;
+        }
+    }
+
+    /* STATION 5: MATCHING PAIRS WITH DUAL DRAG & TOUCH TAP SUPPORT */
+    function renderMatchingPairs(data, container) {
+        binMatches = {};
+        const wrapper = document.createElement('div');
+        wrapper.className = 'matching-container';
+
+        const sitCol = document.createElement('div');
+        sitCol.className = 'matching-col';
+        sitCol.innerHTML = `<div class="matching-title">Cột A: Tình huống thực tế</div>`;
+
+        data.situations.forEach(sit => {
+            const sDiv = document.createElement('div');
+            sDiv.className = 'drop-zone';
+            sDiv.id = sit.id;
+            sDiv.setAttribute('data-bin-id', sit.id);
+            sDiv.style.minHeight = '120px';
+            sDiv.style.textAlign = 'left';
+            sDiv.innerHTML = `
+                <div class="drop-zone-label" style="text-align:left;">${sit.text}</div>
+                <div class="bin-content" id="bin-content-${sit.id}"></div>
+            `;
+
+            sDiv.ondragover = (e) => {
+                e.preventDefault();
+                sDiv.classList.add('drag-over');
+            };
+            sDiv.ondragleave = () => sDiv.classList.remove('drag-over');
+            sDiv.ondrop = (e) => {
+                e.preventDefault();
+                sDiv.classList.remove('drag-over');
+                const cardId = e.dataTransfer.getData('text/plain');
+                placeCardInPair(cardId, sit.id, data);
+            };
+
+            sDiv.onclick = (e) => {
+                if (e.target.classList.contains('btn-remove-card')) return;
+                if (currentSelectedCard) {
+                    placeCardInPair(currentSelectedCard, sit.id, data);
+                }
+            };
+
+            sitCol.appendChild(sDiv);
+        });
+
+        const eqCol = document.createElement('div');
+        eqCol.className = 'matching-col';
+        eqCol.id = 'cards-pool-5';
+        eqCol.innerHTML = `<div class="matching-title">Cột B: Thẻ Hệ Phương Trình</div>`;
+
+        data.eqCards.forEach(eq => {
+            const eDiv = document.createElement('div');
+            eDiv.className = 'draggable-card';
+            eDiv.id = eq.id;
+            eDiv.draggable = true;
+            eDiv.innerHTML = `<div class="card-inner-text">${eq.html}</div>`;
+
+            eDiv.ondragstart = (e) => {
+                e.dataTransfer.setData('text/plain', eq.id);
+                eDiv.classList.add('dragging');
+            };
+            eDiv.ondragend = () => eDiv.classList.remove('dragging');
+
+            eDiv.onclick = (e) => {
+                e.stopPropagation();
+                if (eDiv.parentElement.classList.contains('bin-content')) return;
+
+                document.querySelectorAll('.draggable-card').forEach(c => c.classList.remove('selected-tap'));
+                if (currentSelectedCard === eq.id) {
+                    currentSelectedCard = null;
+                } else {
+                    eDiv.classList.add('selected-tap');
+                    currentSelectedCard = eq.id;
+                }
+            };
+
+            eDiv.ontouchend = (e) => {
+                const touch = e.changedTouches[0];
+                const elemBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (elemBelow) {
+                    const dropZone = elemBelow.closest('.drop-zone');
+                    if (dropZone) {
+                        const sitId = dropZone.getAttribute('data-bin-id');
+                        if (sitId) {
+                            placeCardInPair(eq.id, sitId, data);
+                        }
+                    }
+                }
+            };
+
+            eqCol.appendChild(eDiv);
+        });
+
+        wrapper.appendChild(sitCol);
+        wrapper.appendChild(eqCol);
+        container.appendChild(wrapper);
+    }
+
+    function placeCardInPair(cardId, sitId, data) {
+        const cardElem = document.getElementById(cardId);
+        const targetBinContent = document.getElementById(`bin-content-${sitId}`);
+        if (!cardElem || !targetBinContent) return;
+
+        Object.keys(binMatches).forEach(cId => {
+            if (cId === cardId) delete binMatches[cId];
+        });
+
+        binMatches[cardId] = sitId;
+        cardElem.classList.remove('selected-tap', 'dragging');
+
+        let removeBtn = cardElem.querySelector('.btn-remove-card');
+        if (!removeBtn) {
+            removeBtn = document.createElement('button');
+            removeBtn.className = 'btn-remove-card';
+            removeBtn.innerText = '✕ Cất lại';
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeCardFromPair(cardId, data);
+            };
+            cardElem.appendChild(removeBtn);
+        }
+
+        targetBinContent.appendChild(cardElem);
+        currentSelectedCard = null;
+
+        if (Object.keys(binMatches).length === data.situations.length) {
+            evaluateMatchingPairs(data);
+        }
+    }
+
+    function removeCardFromPair(cardId, data) {
+        delete binMatches[cardId];
+        const cardElem = document.getElementById(cardId);
+        const pool = document.getElementById('cards-pool-5');
+        if (cardElem && pool) {
+            const removeBtn = cardElem.querySelector('.btn-remove-card');
+            if (removeBtn) removeBtn.remove();
+            cardElem.classList.remove('selected-tap');
+            pool.appendChild(cardElem);
+        }
+    }
+
+    function evaluateMatchingPairs(data) {
+        let allCorrect = data.situations.every(s => binMatches[s.targetCard] === s.id);
+        const feedbackBox = document.getElementById('feedback-box');
+        const btnNext = document.getElementById('btn-next');
+
+        if (allCorrect) {
+            playSound('victory');
+            feedbackBox.className = 'feedback-box correct';
+            feedbackBox.innerHTML = `<strong>HOÀN THÀNH XUẤT SẮC!</strong> ${data.correctFeedback}`;
+            grantReward();
+            btnNext.style.display = 'inline-flex';
+            btnNext.innerHTML = `<span>CÁN ĐÍCH & TỔNG KẾT</span>`;
+        } else {
+            playSound('wrong');
+            feedbackBox.className = 'feedback-box wrong';
+            feedbackBox.innerHTML = `<strong>Chưa chính xác!</strong> Gợi ý: ${data.wrongHint}`;
+        }
+    }
+
+    /* ==========================================================================
+       4. REWARDS & GAME LOOP
+       ========================================================================== */
+    function grantReward() {
+        if (fuelPercent < (currentStationIndex + 1) * 20) {
+            fuelPercent = (currentStationIndex + 1) * 20;
+            updateProgressUI();
+        }
+    }
+
+    function nextStation() {
+        if (currentStationIndex < stationsData.length - 1) {
+            currentStationIndex++;
+            updateProgressUI();
+            loadStation(currentStationIndex);
+        } else {
+            showSummaryScreen();
+        }
+    }
+</script>
+</body>
+</html>
