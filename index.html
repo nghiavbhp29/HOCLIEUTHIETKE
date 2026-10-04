@@ -9,10 +9,6 @@
 
     <style>
 
-        /* ==============================
-           THIẾT LẬP CHUNG
-        ============================== */
-
         * {
             box-sizing: border-box;
         }
@@ -28,10 +24,7 @@
             color: #243447;
         }
 
-
-        /* ==============================
-           ĐẦU TRANG
-        ============================== */
+        /* ĐẦU TRANG */
 
         header {
             background: linear-gradient(135deg, #0b4f9c, #1677c8);
@@ -58,10 +51,7 @@
             opacity: 0.95;
         }
 
-
-        /* ==============================
-           KHUNG NỘI DUNG
-        ============================== */
+        /* KHUNG NỘI DUNG */
 
         .container {
             max-width: 1150px;
@@ -88,14 +78,11 @@
             color: #4a5568;
         }
 
-
-        /* ==============================
-           DANH SÁCH HỌC LIỆU
-        ============================== */
+        /* DANH SÁCH HỌC LIỆU */
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 25px;
             align-items: stretch;
         }
@@ -149,7 +136,6 @@
             line-height: 1.7;
             font-size: 16px;
             margin: 0 0 18px;
-
             flex-grow: 1;
         }
 
@@ -175,10 +161,7 @@
             transform: translateY(-1px);
         }
 
-
-        /* ==============================
-           THÔNG TIN KHO HỌC LIỆU
-        ============================== */
+        /* THÔNG TIN KHO */
 
         .note {
             max-width: 900px;
@@ -203,22 +186,14 @@
             color: #0b4f9c;
         }
 
-
-        /* ==============================
-           CHÂN TRANG
-        ============================== */
+        /* CHÂN TRANG */
 
         footer {
             margin-top: 48px;
-
             background: #e8eef5;
-
             text-align: center;
-
             padding: 25px 15px;
-
             line-height: 1.8;
-
             font-size: 14px;
             color: #52606d;
         }
@@ -227,10 +202,16 @@
             color: #0b4f9c;
         }
 
+        /* MÁY TÍNH BẢNG */
 
-        /* ==============================
-           ĐIỆN THOẠI / MÀN HÌNH NHỎ
-        ============================== */
+        @media (max-width: 950px) {
+
+            .grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* ĐIỆN THOẠI */
 
         @media (max-width: 700px) {
 
@@ -275,10 +256,7 @@
 
 <body>
 
-
-    <!-- ==============================
-         ĐẦU TRANG
-    ============================== -->
+    <!-- ĐẦU TRANG -->
 
     <header>
 
@@ -286,19 +264,12 @@
 
         <h2>TOÁN – KHOA HỌC TỰ NHIÊN THCS</h2>
 
-        <p>
-            Học liệu hỗ trợ dạy học, luyện tập và tự học
-        </p>
+        <p>Học liệu hỗ trợ dạy học, luyện tập và tự học</p>
 
     </header>
 
 
-    <!-- ==============================
-         NỘI DUNG CHÍNH
-    ============================== -->
-
     <main class="container">
-
 
         <!-- GIỚI THIỆU -->
 
@@ -315,17 +286,12 @@
         </section>
 
 
-        <!-- ==========================
-             DANH SÁCH HỌC LIỆU
-        =========================== -->
+        <!-- DANH SÁCH HỌC LIỆU -->
 
         <section class="grid">
 
 
-            <!-- ==================================
-                 HỌC LIỆU 1
-                 CHUYẾN XE ĐẠI SỐ 9
-            =================================== -->
+            <!-- HỌC LIỆU 1 -->
 
             <article class="card">
 
@@ -350,10 +316,7 @@
             </article>
 
 
-            <!-- ==================================
-                 HỌC LIỆU 2
-                 PHÒNG THÍ NGHIỆM HỢP KIM
-            =================================== -->
+            <!-- HỌC LIỆU 2 -->
 
             <article class="card">
 
@@ -380,12 +343,37 @@
             </article>
 
 
+            <!-- HỌC LIỆU 3 -->
+
+            <article class="card">
+
+                <div class="icon">🔬</div>
+
+                <span class="tag">
+                    KHTN 9 • HỌC LIỆU TƯƠNG TÁC
+                </span>
+
+                <h3>Lens Explorer – Khám phá thấu kính</h3>
+
+                <p>
+                    Học liệu tương tác và mô phỏng giúp học sinh
+                    khám phá trục chính, quang tâm, tiêu điểm,
+                    tiêu cự và đường truyền tia sáng qua thấu kính
+                    thông qua chuỗi nhiệm vụ trực quan,
+                    có tích hợp tiếng Anh.
+                </p>
+
+                <a class="btn" href="Khamphathaukinh.html">
+                    Mở học liệu →
+                </a>
+
+            </article>
+
+
         </section>
 
 
-        <!-- ==========================
-             THÔNG TIN SỬ DỤNG
-        =========================== -->
+        <!-- THÔNG TIN SỬ DỤNG -->
 
         <section class="note">
 
@@ -406,9 +394,7 @@
     </main>
 
 
-    <!-- ==============================
-         CHÂN TRANG
-    ============================== -->
+    <!-- CHÂN TRANG -->
 
     <footer>
 
