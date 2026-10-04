@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Kho học liệu số - Trường THCS Vinh Quang</title>
+<title>Kho học liệu số - Toán và Khoa học tự nhiên THCS</title>
 
 <style>
 * {
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
@@ -18,121 +22,209 @@ body {
     color: #243447;
 }
 
+/* =========================
+   PHẦN ĐẦU TRANG
+========================= */
 header {
     background: linear-gradient(135deg, #0b4f9c, #1677c8);
     color: white;
     text-align: center;
-    padding: 45px 20px;
+    padding: 48px 20px;
 }
 
 header h1 {
     margin: 0 0 10px;
-    font-size: 32px;
+    font-size: 34px;
+    letter-spacing: 0.5px;
 }
 
 header h2 {
     margin: 0;
-    font-size: 21px;
+    font-size: 22px;
     font-weight: 500;
 }
 
 header p {
-    margin: 12px 0 0;
+    margin: 14px 0 0;
+    font-size: 17px;
     opacity: 0.95;
 }
 
+/* =========================
+   KHUNG NỘI DUNG
+========================= */
 .container {
-    max-width: 1100px;
-    margin: 35px auto;
+    max-width: 1150px;
+    margin: 38px auto;
     padding: 0 20px;
 }
 
 .intro {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 
 .intro h2 {
     color: #0b4f9c;
+    font-size: 28px;
+    margin-bottom: 10px;
 }
 
+.intro p {
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 760px;
+    color: #4a5568;
+}
+
+/* =========================
+   DANH SÁCH HỌC LIỆU
+========================= */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 25px;
 }
 
 .card {
     background: white;
-    border-radius: 14px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     border-top: 5px solid #1677c8;
-    transition: 0.25s;
+    transition: transform 0.25s, box-shadow 0.25s;
+    display: flex;
+    flex-direction: column;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 22px rgba(0,0,0,0.13);
+    box-shadow: 0 9px 24px rgba(0,0,0,0.13);
 }
 
 .icon {
-    font-size: 42px;
-    margin-bottom: 12px;
-}
-
-.card h3 {
-    color: #0b4f9c;
-    margin: 5px 0 10px;
+    font-size: 43px;
+    margin-bottom: 14px;
 }
 
 .tag {
     display: inline-block;
+    align-self: flex-start;
     background: #e9f3ff;
     color: #0b4f9c;
-    padding: 5px 10px;
-    border-radius: 15px;
+    padding: 6px 12px;
+    border-radius: 18px;
     font-size: 13px;
-    margin-bottom: 12px;
+    margin-bottom: 13px;
+}
+
+.card h3 {
+    color: #0b4f9c;
+    margin: 4px 0 12px;
+    font-size: 22px;
 }
 
 .card p {
-    line-height: 1.6;
-    min-height: 75px;
+    line-height: 1.65;
+    font-size: 16px;
+    margin: 0 0 15px;
+    flex-grow: 1;
 }
 
 .btn {
     display: inline-block;
+    align-self: flex-start;
     margin-top: 10px;
-    padding: 11px 20px;
+    padding: 12px 21px;
     background: #0b66c3;
     color: white;
     text-decoration: none;
     border-radius: 8px;
     font-weight: bold;
+    transition: background 0.2s;
 }
 
 .btn:hover {
     background: #084f99;
 }
 
+/* =========================
+   GHI CHÚ
+========================= */
+.note {
+    margin-top: 38px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    border-left: 5px solid #1677c8;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+}
+
+.note strong {
+    color: #0b4f9c;
+}
+
+.note p {
+    margin: 6px 0;
+    line-height: 1.6;
+}
+
+/* =========================
+   CHÂN TRANG
+========================= */
 footer {
-    margin-top: 45px;
+    margin-top: 48px;
     background: #e8eef5;
     text-align: center;
-    padding: 22px 15px;
-    line-height: 1.7;
+    padding: 25px 15px;
+    line-height: 1.8;
     font-size: 14px;
     color: #52606d;
 }
 
+footer strong {
+    color: #0b4f9c;
+    font-size: 15px;
+}
+
+/* =========================
+   ĐIỆN THOẠI
+========================= */
 @media (max-width: 600px) {
+
+    header {
+        padding: 36px 15px;
+    }
+
     header h1 {
-        font-size: 25px;
+        font-size: 27px;
     }
 
     header h2 {
         font-size: 18px;
+        line-height: 1.5;
+    }
+
+    header p {
+        font-size: 15px;
+    }
+
+    .container {
+        margin: 28px auto;
+        padding: 0 15px;
+    }
+
+    .intro h2 {
+        font-size: 24px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 23px;
     }
 }
 </style>
@@ -140,19 +232,26 @@ footer {
 
 <body>
 
+<!-- =========================
+     ĐẦU TRANG
+========================= -->
 <header>
     <h1>KHO HỌC LIỆU SỐ</h1>
-    <h2>TRƯỜNG THCS VINH QUANG</h2>
+    <h2>TOÁN – KHOA HỌC TỰ NHIÊN THCS</h2>
     <p>Học liệu hỗ trợ dạy học, luyện tập và tự học</p>
 </header>
 
+<!-- =========================
+     NỘI DUNG CHÍNH
+========================= -->
 <main class="container">
 
     <section class="intro">
         <h2>Học liệu tương tác</h2>
         <p>
-            Lựa chọn học liệu phù hợp để học tập, luyện tập
-            và củng cố kiến thức.
+            Các học liệu được thiết kế nhằm hỗ trợ hoạt động dạy học,
+            luyện tập, củng cố kiến thức và phát triển khả năng tự học
+            của học sinh.
         </p>
     </section>
 
@@ -160,46 +259,81 @@ footer {
 
         <!-- HỌC LIỆU 1 -->
         <article class="card">
+
             <div class="icon">🚍</div>
-            <span class="tag">TOÁN 9 • HỌC LIỆU TƯƠNG TÁC</span>
+
+            <span class="tag">
+                TOÁN 9 • HỌC LIỆU TƯƠNG TÁC
+            </span>
 
             <h3>Chuyến xe Đại số 9</h3>
 
             <p>
                 Học liệu tương tác hỗ trợ học sinh ôn tập,
-                luyện tập và củng cố kiến thức Đại số lớp 9.
+                luyện tập và củng cố kiến thức Đại số lớp 9
+                thông qua các nhiệm vụ học tập trực quan.
             </p>
 
             <a class="btn" href="Chuyenxe.html">
                 Mở học liệu →
             </a>
+
         </article>
 
         <!-- HỌC LIỆU 2 -->
         <article class="card">
+
             <div class="icon">📘</div>
-            <span class="tag">TOÁN 9 • LUYỆN TẬP</span>
+
+            <span class="tag">
+                TOÁN 9 • LUYỆN TẬP
+            </span>
 
             <h3>Bài tập Chương I</h3>
 
             <p>
                 Học liệu hỗ trợ học sinh luyện tập,
-                củng cố và vận dụng kiến thức Chương I.
+                củng cố và vận dụng kiến thức Chương I,
+                góp phần nâng cao khả năng tự học.
             </p>
 
             <a class="btn" href="baitapchuong1.html">
                 Mở học liệu →
             </a>
+
         </article>
 
     </section>
 
+    <!-- GHI CHÚ -->
+    <section class="note">
+        <p>
+            <strong>Phạm vi sử dụng:</strong>
+            Học liệu phục vụ hoạt động dạy học, luyện tập,
+            ôn tập và tự học.
+        </p>
+
+        <p>
+            Kho học liệu sẽ tiếp tục được cập nhật và bổ sung
+            các sản phẩm phù hợp với quá trình dạy học.
+        </p>
+    </section>
+
 </main>
 
+<!-- =========================
+     CHÂN TRANG
+========================= -->
 <footer>
-    <strong>TRƯỜNG THCS VINH QUANG</strong><br>
-    Kho học liệu số phục vụ dạy học và tự học<br>
+
+    <strong>KHO HỌC LIỆU SỐ CÁ NHÂN</strong><br>
+
+    Thiết kế và biên soạn: <strong>Bùi Thị Nghĩa</strong><br>
+
+    Phục vụ dạy học và chia sẻ học liệu giáo dục<br>
+
     Năm học 2026 – 2027
+
 </footer>
 
 </body>
