@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHÒNG THÍ NGHIỆM HỢP KIM – Giải mã mẫu vật bằng hệ phương trình</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #1a2530;
+            color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 1280px;
+            height: 720px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        header {
+            background-color: #0f2b48;
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #00b4d8;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .team-badge {
+            background-color: #ff9f1c;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .keys-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .key-icon {
+            width: 32px;
+            height: 32px;
+            background-color: rgba(255,255,255,0.1);
+            border: 2px solid #6c757d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.4s ease;
+            opacity: 0.4;
+        }
+
+        .key-icon.active {
+            background-color: #ffd166;
+            border-color: #ff9f1c;
+            opacity: 1;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px #ffd166;
+        }
+
+        .progress-bar-bg {
+            width: 160px;
+            height: 14px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 7px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00b4d8, #2ec4b6);
+            transition: width 0.5s ease;
+        }
+
+        main {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+            background-color: #eef4f8;
+        }
+
+        .screen {
+            display: none;
+            height: 100%;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .instruction-box {
+            background-color: #0077b6;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .stage-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border: 2px solid #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #0f2b48;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+        }
+
+        .cards-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-content: flex-start;
+            min-height: 80px;
+            padding: 10px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            border: 1px dashed #94a3b8;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: 2px solid #0077b6;
+            color: #0f2b48;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            border-color: #00b4d8;
+        }
+
+        .card.selected {
+            background-color: #caf0f8;
+            border-color: #ff9f1c;
+            box-shadow: 0 0 8px #ff9f1c;
+        }
+
+        .card.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+            cursor: default;
+        }
+
+        .drop-zone-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .relation-box {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .drop-zone {
+            background-color: #ffffff;
+            border: 2px dashed #94a3b8;
+            border-radius: 8px;
+            padding: 10px;
+            min-height: 55px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        .drop-zone.drag-over {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+        }
+
+        .zone-label {
+            font-weight: bold;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .bottom-bar {
+            background-color: #ffffff;
+            border-top: 2px solid #e2e8f0;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .feedback-box {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            background-color: #f1f5f9;
+            color: #334155;
+            border-left: 5px solid #64748b;
+        }
+
+        .feedback-box.correct {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border-left-color: #198754;
+        }
+
+        .feedback-box.incorrect {
+            background-color: #f8d7da;
+            color: #842029;
+            border-left-color: #dc3545;
+        }
+
+        .feedback-box.hint {
+            background-color: #fff3cd;
+            color: #664d03;
+            border-left-color: #ffc107;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary { background-color: #0077b6; color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #005f9e; }
+
+        .btn-success { background-color: #2ec4b6; color: white; }
+        .btn-success:hover:not(:disabled) { background-color: #25a094; }
+
+        .btn-warning { background-color: #ff9f1c; color: white; }
+        .btn-warning:hover:not(:disabled) { background-color: #e0880f; }
+
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-secondary:hover:not(:disabled) { background-color: #5a6268; }
+
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 4px;
+            font-size: 0.95rem;
+        }
+        .fraction-top {
+            border-bottom: 2px solid #0f2b48;
+            padding-bottom: 2px;
+        }
+        .fraction-bottom {
+            padding-top: 2px;
+        }
+
+        .equation-system {
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 30px;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 2px solid #cbd5e1;
+        }
+        .brace {
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1;
+            color: #0f2b48;
+        }
+
+        .intro-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .intro-title {
+            color: #0f2b48;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .context-box {
+            background-color: #e0f2fe;
+            border-left: 6px solid #0284c7;
+            padding: 15px;
+            text-align: left;
+            margin: 15px 0;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        .rules-list {
+            text-align: left;
+            margin: 15px 0;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .specimen-file {
+            background-color: #fff8dc;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .specimen-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8b4513;
+            border-bottom: 2px dashed #d4af37;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .radio-option:hover {
+            background-color: #e2e8f0;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 6px;
+            font-size: 1rem;
+            border: 2px solid #0077b6;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alloy-diagram {
+            width: 100%;
+            max-width: 260px;
+            height: auto;
+            margin: 10px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <header>
+        <div class="header-title">
+            <span>🔬 PHÒNG THÍ NGHIỆM HỢP KIM</span>
+            <span style="font-size: 0.85rem; color: #a5f3fc; font-weight: 500; margin-left: 10px;">Thiết kế: Bùi Thị Nghĩa</span>
+        </div>
+        <div class="progress-section">
+            <div class="keys-container">
+                <div class="key-icon" id="key-1" title="Chìa khóa 1: Phân tích dữ kiện">🗝️</div>
+                <div class="key-icon" id="key-2" title="Chìa khóa 2: Xây dựng mô hình">🗝️</div>
+                <div class="key-icon" id="key-3" title="Chìa khóa 3: Kích hoạt hệ phương trình">🗝️</div>
+                <div class="key-icon" id="key-4" title="Chìa khóa 4: Kiểm định kết quả">🗝️</div>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- MÀN HÌNH 0: MỞ ĐẦU & BỐI CẢNH -->
+        <div id="screen-intro" class="screen active">
+            <div class="intro-card">
+                <h1 class="intro-title">PHÒNG THÍ NGHIỆM HỢP KIM</h1>
+                <p style="font-size: 1.1rem; color: #475569; font-weight: bold;">Giải mã mẫu vật bằng hệ phương trình</p>
+                <p style="font-size: 1rem; color: #0077b6; font-weight: bold; margin-top: 6px;">Thiết kế: Bùi Thị Nghĩa</p>
+                
+                <svg class="alloy-diagram" viewBox="0 0 200 120">
+                    <rect x="20" y="20" width="160" height="80" rx="10" fill="#b87333" stroke="#5c3a1a" stroke-width="3"/>
+                    <path d="M 80 20 L 180 20 A 10 10 0 0 1 180 100 L 120 100 Z" fill="#a1a8b0" opacity="0.8"/>
+                    <text x="50" y="65" fill="#ffffff" font-weight="bold" font-size="16">Đồng (Cu)</text>
+                    <text x="125" y="65" fill="#1a2530" font-weight="bold" font-size="16">Kẽm (Zn)</text>
+                </svg>
+
+                <div class="context-box">
+                    <strong>Bối cảnh nghiên cứu:</strong><br>
+                    Phòng thí nghiệm vừa nhận một mẫu hợp kim bí ẩn gồm đồng và kẽm. Mẫu vật có tổng khối lượng <strong>124 g</strong> và thể tích <strong>15 cm³</strong>. Biết rằng 1 cm³ đồng nặng <strong>8,9 g</strong> và 1 cm³ kẽm nặng <strong>7 g</strong>.<br>
+                    <strong>Nhiệm vụ:</strong> Xác định chính xác khối lượng của mỗi kim loại trong mẫu hợp kim.
+                </div>
+                <button class="btn btn-primary" onclick="game.nextFromIntro()"> Bắt đầu nghiên cứu</button>
+            </div>
+        </div>
+
+        <!-- MÀN HÌNH RULES: LUẬT CHƠI -->
+        <div id="screen-rules" class="screen">
+            <div class="intro-card">
+                <h2 class="intro-title" style="color: #0077b6;"> LUẬT PHÒNG THÍ NGHIỆM</h2>
+                <ul class="rules-list">
+                    <li> Vượt qua lần lượt <strong>4 chặng nghiên cứu</strong>.</li>
+                    <li> Đọc kỹ dữ kiện và hoàn thành đúng nhiệm vụ ở mỗi chặng để thu thập <strong>1 chìa khóa</strong>.</li>
+                    <li> Không đếm ngược thời gian, không trừ điểm, không loại người chơi.</li>
+                    <li> Sai lần đầu tiên sẽ nhận được phản hồi định hướng. Từ lần sai thứ hai, hệ thống sẽ mở tính năng <strong>Gợi ý</strong>.</li>
+                    <li> Bạn có thể thử lại không giới hạn số lần cho đến khi tìm ra kết quả đúng.</li>
+                    <li> Thu đủ <strong>4 chìa khóa</strong> để mở mã khóa Hồ sơ mẫu vật.</li>
+                </ul>
+                <button class="btn btn-success" onclick="game.startStage(1)"> Vào phòng thí nghiệm</button>
+            </div>
+        </div>
+
+        <!-- CHẶNG 1: GIẢI MÃ DỮ KIỆN -->
+        <div id="screen-stage-1" class="screen">
+            <div class="instruction-box">
+                <strong>Chặng 1:</strong> Kéo hoặc chọn từng thẻ dữ kiện và xếp vào nhóm phù hợp bên phải.
+            </div>
+            <div class="stage-layout">
+                <div class="panel">
+                    <div class="panel-title">Thẻ dữ kiện bài toán</div>
+                    <div class="cards-pool" id="s1-pool"></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">Nhóm phân loại</div>
+                    <div class="drop-zone-container">
+                        <div class="zone-label">Khối lượng tổng cộng:</div>
+                        <div class="drop-zone" id="s1-z-mass" data-zone="mass"></div>
+
+                        <div class="zone-label">Thể tích tổng cộng:</div>
+                        <div class="drop-zone" id="s1-z-vol" data-zone="vol"></div>
+
+                        <div class="zone-label">Khối lượng riêng (Khối lượng 1 cm³):</div>
+                        <div class="drop-zone" id="s1-z-density" data-zone="density"></div>
+
+                        <div class="zone-label">Đại lượng cần tìm:</div>
+                        <div class="drop-zone" id="s1-z-target" data-zone="target"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHẶNG 2: XÂY DỰNG MÔ HÌNH -->
+        <div id="screen-stage-2" class="screen">
+            <div class="instruction-box">
+                <strong>Chặng 2:</strong> Chọn hai ẩn, đặt điều kiện và ghép biểu thức biểu diễn thể tích tương ứng.
+            </div>
+            <div class="stage-layout">
+                <div class="panel">
+                    <div class="panel-title">1. Chọn ẩn và điều kiện</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <p>Gọi <strong>x</strong> (g) là khối lượng của Đồng trong hợp kim.</p>
+                        <p>Gọi <strong>y</strong> (g) là khối lượng của Kẽm trong hợp kim.</p>
+                        <div style="margin-top: 5px;">
+                            <label><strong>Điều kiện của ẩn x, y:</strong></label>
+                            <select id="s2-cond-select" style="padding: 6px; border-radius: 4px; margin-left: 5px;">
+                                <option value="">-- Chọn điều kiện --</option>
+                                <option value="wrong1">x, y ∈ ℤ</option>
+                                <option value="correct">x > 0, y > 0</option>
+                                <option value="wrong2">x &lt; 124, y &lt; 15</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="panel-title" style="margin-top: 10px;">2. Thẻ biểu thức thể tích</div>
+                    <div class="cards-pool" id="s2-pool"></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">Biểu diễn thể tích theo ẩn</div>
+                    <div class="drop-zone-container">
+                        <div class="zone-label">Thể tích của Đồng (cm³):</div>
+                        <div class="drop-zone" id="s2-z-vol-cu" data-zone="volCu"></div>
+
+                        <div class="zone-label">Thể tích của Kẽm (cm³):</div>
+                        <div class="drop-zone" id="s2-z-vol-zn" data-zone="volZn"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHẶNG 3: KÍCH HOẠT HỆ PHƯƠNG TRÌNH -->
+        <div id="screen-stage-3" class="screen">
+            <div class="instruction-box">
+                <strong>Chặng 3:</strong> Tìm hai mối quan hệ toán học để xây dựng hệ phương trình hoàn chỉnh.
+            </div>
+            <div class="stage-layout">
+                <div class="panel">
+                    <div class="panel-title">Mối quan hệ trong bài toán</div>
+                    <div class="drop-zone-container">
+                        <div class="relation-box">
+                            <span class="zone-label">📌 Mối quan hệ 1: Tổng khối lượng hợp kim là 124 g</span>
+                            <div id="s3-z-eq1" class="drop-zone" data-zone="eq1"></div>
+                        </div>
+                        <div class="relation-box">
+                            <span class="zone-label">📌 Mối quan hệ 2: Tổng thể tích hợp kim là 15 cm³</span>
+                            <div id="s3-z-eq2" class="drop-zone" data-zone="eq2"></div>
+                        </div>
+                    </div>
+                    <div class="panel-title" style="margin-top: 10px;">Thẻ phương trình</div>
+                    <div class="cards-pool" id="s3-pool"></div>
+                </div>
+                <div class="panel" style="justify-content: center; align-items: center;">
+                    <div class="panel-title" style="width: 100%;">Hệ phương trình thu được</div>
+                    <div class="equation-system">
+                        <span class="brace">{</span>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div id="s3-display-eq1" style="color: #94a3b8; font-style: italic;">[Phương trình 1]</div>
+                            <div id="s3-display-eq2" style="color: #94a3b8; font-style: italic;">[Phương trình 2]</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHẶNG 4: KIỂM ĐỊNH KẾT QUẢ -->
+        <div id="screen-stage-4" class="screen">
+            <div class="instruction-box">
+                <strong>Chặng 4:</strong> Giải hệ phương trình, thử lại nghiệm và hoàn thiện kết luận mẫu vật.
+            </div>
+            <div class="stage-layout">
+                <div class="panel">
+                    <div class="panel-title">1. Nhập kết quả giải hệ phương trình</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: center;">
+                        <label>Khối lượng Đồng (x):</label>
+                        <div><input type="number" id="s4-val-x"> g</div>
+                        <label>Khối lượng Kẽm (y):</label>
+                        <div><input type="number" id="s4-val-y"> g</div>
+                    </div>
+
+                    <div class="panel-title" style="margin-top: 10px;">2. Kiểm tra tính đúng đắn của nghiệm</div>
+                    <div style="font-size: 0.95rem; line-height: 1.6;">
+                        <p>• Tổng khối lượng: <span id="s4-check-m">89 + 35 = 124</span> (Thỏa mãn)</p>
+                        <p>• Tổng thể tích: <span id="s4-check-v">89/8.9 + 35/7 = 10 + 5 = 15</span> (Thỏa mãn)</p>
+                        <p>• Đối chiếu điều kiện: x, y > 0 (Thỏa mãn)</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">3. Nhiệm vụ kiểm định lỗi kết luận</div>
+                    <p style="font-size: 0.95rem;">Một tập sự nghiên cứu đã ghi kết luận bên dưới. Hãy phát hiện lỗi và chọn phương án sửa chính xác:</p>
+                    
+                    <div style="background-color: #fee2e2; border: 1px solid #ef4444; padding: 8px; border-radius: 6px; font-style: italic; color: #991b1b; font-size: 0.9rem;">
+                        "Kết luận: Hợp kim chứa 35 g đồng và 89 g kẽm."
+                    </div>
+
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="s4-conclusion" value="wrong1">
+                            Kết luận trên đã đúng, không cần sửa đổi.
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="s4-conclusion" value="correct">
+                            Kết luận bị đảo ngược giá trị: Mẫu hợp kim chứa <strong>89 g đồng</strong> và <strong>35 g kẽm</strong>.
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="s4-conclusion" value="wrong2">
+                            Thừa dữ kiện, chỉ cần kết luận tổng khối lượng là 124 g.
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MÀN HÌNH CỦNG CỐ KIẾN THỨC -->
+        <div id="screen-consolidation" class="screen">
+            <div class="instruction-box">
+                <strong>Củng cố:</strong> Sắp xếp lại các bước giải bài toán bằng cách lập hệ phương trình theo đúng thứ tự chuẩn.
+            </div>
+            <div class="stage-layout">
+                <div class="panel">
+                    <div class="panel-title">Các bước thực hiện (Bấm/Kéo thả vào ô)</div>
+                    <div class="cards-pool" id="sc-pool"></div>
+                </div>
+                <div class="panel">
+                    <div class="panel-title">Quy trình chuẩn 5 bước</div>
+                    <div class="drop-zone-container">
+                        <div class="zone-label">Bước 1:</div>
+                        <div class="drop-zone" id="sc-z-1" data-step="1"></div>
+                        <div class="zone-label">Bước 2:</div>
+                        <div class="drop-zone" id="sc-z-2" data-step="2"></div>
+                        <div class="zone-label">Bước 3:</div>
+                        <div class="drop-zone" id="sc-z-3" data-step="3"></div>
+                        <div class="zone-label">Bước 4:</div>
+                        <div class="drop-zone" id="sc-z-4" data-step="4"></div>
+                        <div class="zone-label">Bước 5:</div>
+                        <div class="drop-zone" id="sc-z-5" data-step="5"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MÀN HÌNH HỒ SƠ MẪU VẬT HOÀN THÀNH -->
+        <div id="screen-summary" class="screen">
+            <div class="intro-card" style="max-width: 900px;">
+                <h2 class="intro-title" style="color: #2ec4b6;">🎉 HỒ SƠ MẪU VẬT ĐÃ MỞ KHÓA!</h2>
+                <p>Bạn đã hoàn thành xuất sắc quá trình mô hình hóa toán học và giải bài toán thực tế.</p>
+
+                <div class="specimen-file">
+                    <div class="specimen-title">📜 THÔNG SỐ GIẢI MÃ MẪU HỢP KIM</div>
+                    <p>• <strong>Khối lượng Đồng (Cu):</strong> 89 g</p>
+                    <p>• <strong>Khối lượng Kẽm (Zn):</strong> 35 g</p>
+                    <p>• <strong>Tổng khối lượng kiểm định:</strong> 89 + 35 = 124 g (Chính xác)</p>
+                    <p>• <strong>Tổng thể tích kiểm định:</strong> (89 / 8,9) + (35 / 7) = 10 + 5 = 15 cm³ (Chính xác)</p>
+                </div>
+
+                <div class="context-box" style="margin-top: 15px; background-color: #f0fdf4; border-left-color: #16a34a;">
+                    <strong> SỔ TAY TỔNG KẾT QUY TRÌNH HỌC TẬP:</strong><br>
+                    <strong>Bước 1. Lập hệ phương trình:</strong> Chọn hai ẩn và đặt điều kiện thích hợp; Biểu diễn các đại lượng chưa biết qua ẩn; Lập hai phương trình biểu thị mối quan hệ.<br>
+                    <strong>Bước 2. Giải hệ phương trình:</strong> Sử dụng phương pháp thế hoặc cộng đại số.<br>
+                    <strong>Bước 3. Kiểm tra và trả lời:</strong> Đối chiếu nghiệm với điều kiện và kết luận bài toán.
+                </div>
+
+                <div style="background-color: #fff3cd; padding: 12px; border-radius: 6px; text-align: left; margin-bottom: 15px;">
+                    <strong>❓ Câu hỏi thảo luận dành cho cả lớp:</strong><br>
+                    <em>"Nếu gặp một bài toán thực tế khác cần giải bằng cách lập hệ phương trình, em sẽ bắt đầu từ đâu và thực hiện theo những bước nào?"</em>
+                </div>
+
+                <button class="btn btn-warning" onclick="game.restartGame()">🔄 Chơi lại từ đầu</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- THANH ĐIỀU KHIỂN DƯỚI -->
+    <footer class="bottom-bar" id="bottom-bar">
+        <div class="feedback-box" id="feedback-text">
+            Sẵn sàng bắt đầu nhiệm vụ phòng thí nghiệm.
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-secondary" id="btn-reset" onclick="game.resetCurrentStage()">Làm lại</button>
+            <button class="btn btn-warning" id="btn-hint" onclick="game.showHint()" disabled>Gợi ý</button>
+            <button class="btn btn-primary" id="btn-check" onclick="game.checkCurrentStage()">Kiểm tra</button>
+            <button class="btn btn-success" id="btn-next" onclick="game.nextStage()" disabled>Tiếp tục ➔</button>
+        </div>
+    </footer>
+</div>
+
+<script>
+const GAME_DATA = {
+    teams: ["Đội 1", "Đội 2", "Đội 3", "Đội 4"],
+    stage1: {
+        cards: [
+            { id: "c1", text: "124 g", zone: "mass" },
+            { id: "c2", text: "15 cm³", zone: "vol" },
+            { id: "c3", text: "8,9 g/cm³", zone: "density" },
+            { id: "c4", text: "7 g/cm³", zone: "density" },
+            { id: "c5", text: "Khối lượng đồng (g)", zone: "target" },
+            { id: "c6", text: "Khối lượng kẽm (g)", zone: "target" }
+        ],
+        hint: "Khối lượng tổng đo bằng gram (g), thể tích đo bằng cm³, khối lượng riêng tính theo g/cm³."
+    },
+    stage2: {
+        cards: [
+            { id: "s2c1", text: "x / 8,9 (cm³)", zone: "volCu", html: '<div class="fraction"><span class="fraction-top">x</span><span class="fraction-bottom">8,9</span></div> cm³' },
+            { id: "s2c2", text: "y / 7 (cm³)", zone: "volZn", html: '<div class="fraction"><span class="fraction-top">y</span><span class="fraction-bottom">7</span></div> cm³' },
+            { id: "s2c3", text: "8,9 / x (cm³)", zone: "wrong", html: '<div class="fraction"><span class="fraction-top">8,9</span><span class="fraction-bottom">x</span></div> cm³' },
+            { id: "s2c4", text: "7 / y (cm³)", zone: "wrong", html: '<div class="fraction"><span class="fraction-top">7</span><span class="fraction-bottom">y</span></div> cm³' }
+        ],
+        hint: "Muốn tính thể tích khi biết khối lượng và khối lượng của 1 cm³, hãy thực hiện phép tính chia: Thể tích = Khối lượng / Khối lượng riêng."
+    },
+    stage3: {
+        cards: [
+            { id: "s3c1", text: "x + y = 124", zone: "eq1", html: 'x + y = 124' },
+            { id: "s3c2", text: "x/8,9 + y/7 = 15", zone: "eq2", html: '<div class="fraction"><span class="fraction-top">x</span><span class="fraction-bottom">8,9</span></div> + <div class="fraction"><span class="fraction-top">y</span><span class="fraction-bottom">7</span></div> = 15' },
+            { id: "s3c3", text: "8,9x + 7y = 124", zone: "wrong", html: '8,9x + 7y = 124' }
+        ],
+        hint: "Mối quan hệ thứ nhất liên quan đến tổng khối lượng (124 g); mối quan hệ thứ hai liên quan đến tổng thể tích (15 cm³)."
+    },
+    stage4: {
+        correctX: 89,
+        correctY: 35,
+        hint: "Giải hệ phương trình bằng cách rút x = 124 - y thay vào phương trình thứ hai, sau đó kiểm tra nghiệm x, y có lớn hơn 0 hay không."
+    },
+    consolidation: {
+        steps: [
+            { id: "sc1", text: "Chọn ẩn và đặt điều kiện", order: 1 },
+            { id: "sc2", text: "Biểu diễn các đại lượng chưa biết", order: 2 },
+            { id: "sc3", text: "Lập hai phương trình biểu thị mối quan hệ", order: 3 },
+            { id: "sc4", text: "Giải hệ phương trình", order: 4 },
+            { id: "sc5", text: "Kiểm tra nghiệm và trả lời", order: 5 }
+        ],
+        hint: "Lập hệ phương trình gồm 3 bước nhỏ (chọn ẩn -> biểu diễn đại lượng -> lập phương trình), sau đó mới giải hệ và cuối cùng kiểm tra trả lời."
+    }
+};
+
+class GameController {
+    constructor() {
+        this.currentStage = 0;
+        this.keysUnlocked = [false, false, false, false];
+        this.failedAttempts = {};
+        this.selectedCard = null;
+        this.init();
+    }
+
+    init() {
+        this.bindEvents();
+        this.updateUI();
+    }
+
+    bindEvents() {
+        document.addEventListener('click', (e) => {
+            const cardEl = e.target.closest('.card');
+            const targetZone = e.target.closest('.drop-zone') || e.target.closest('.cards-pool');
+
+            if (cardEl && !cardEl.classList.contains('correct')) {
+                this.handleCardClick(cardEl);
+            } else if (targetZone && this.selectedCard) {
+                this.handleZoneClick(targetZone);
+            }
+        });
+    }
+
+    setTeam(stage) {
+        // Bỏ chức năng hiển thị thẻ Đội
+    }
+
+    showScreen(screenId) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
+        
+        const bottomBar = document.getElementById('bottom-bar');
+        if (screenId === 'screen-intro' || screenId === 'screen-rules' || screenId === 'screen-summary') {
+            bottomBar.style.display = 'none';
+        } else {
+            bottomBar.style.display = 'flex';
+        }
+    }
+
+    nextFromIntro() {
+        this.showScreen('screen-rules');
+    }
+
+    startStage(stageNum) {
+        this.currentStage = stageNum;
+        this.setTeam(stageNum);
+        this.showScreen(`screen-stage-${stageNum}`);
+        this.resetFeedback();
+        
+        if (!this.failedAttempts[stageNum]) {
+            this.failedAttempts[stageNum] = 0;
+        }
+
+        document.getElementById('btn-next').disabled = !this.keysUnlocked[stageNum - 1];
+        document.getElementById('btn-hint').disabled = this.failedAttempts[stageNum] < 2;
+
+        if (stageNum === 1) this.setupStage1();
+        if (stageNum === 2) this.setupStage2();
+        if (stageNum === 3) this.setupStage3();
+        if (stageNum === 4) this.setupStage4();
+        
+        this.updateUI();
+    }
+
+    updateUI() {
+        for (let i = 1; i <= 4; i++) {
+            const keyEl = document.getElementById(`key-${i}`);
+            if (this.keysUnlocked[i - 1]) {
+                keyEl.classList.add('active');
+            } else {
+                keyEl.classList.remove('active');
+            }
+        }
+
+        const count = this.keysUnlocked.filter(Boolean).length;
+        document.getElementById('progress-fill').style.width = `${count * 25}%`;
+    }
+
+    setFeedback(text, type = '') {
+        const fb = document.getElementById('feedback-text');
+        fb.textContent = text;
+        fb.className = 'feedback-box ' + type;
+    }
+
+    resetFeedback() {
+        this.setFeedback('Hãy hoàn thành nhiệm vụ và bấm "Kiểm tra".');
+    }
+
+    handleCardClick(cardEl) {
+        if (this.selectedCard === cardEl) {
+            this.selectedCard.classList.remove('selected');
+            this.selectedCard = null;
+        } else {
+            if (this.selectedCard) this.selectedCard.classList.remove('selected');
+            this.selectedCard = cardEl;
+            this.selectedCard.classList.add('selected');
+        }
+    }
+
+    handleZoneClick(zoneEl) {
+        if (this.selectedCard) {
+            zoneEl.appendChild(this.selectedCard);
+            this.selectedCard.classList.remove('selected');
+            this.selectedCard = null;
+            this.onZoneUpdated();
+        }
+    }
+
+    makeDraggable(cardEl) {
+        cardEl.draggable = true;
+        cardEl.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', cardEl.id);
+            cardEl.classList.add('selected');
+        });
+        cardEl.addEventListener('dragend', () => {
+            cardEl.classList.remove('selected');
+        });
+    }
+
+    setupDropZones() {
+        document.querySelectorAll('.drop-zone, .cards-pool').forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const id = e.dataTransfer.getData('text/plain');
+                const card = document.getElementById(id);
+                if (card) {
+                    zone.appendChild(card);
+                    this.onZoneUpdated();
+                }
+            });
+        });
+    }
+
+    onZoneUpdated() {
+        if (this.currentStage === 3) {
+            this.updateStage3Display();
+        }
+    }
+
+    setupStage1() {
+        const pool = document.getElementById('s1-pool');
+        pool.innerHTML = '';
+        document.querySelectorAll('#screen-stage-1 .drop-zone').forEach(z => z.innerHTML = '');
+        
+        const cards = [...GAME_DATA.stage1.cards].sort(() => Math.random() - 0.5);
+        cards.forEach(c => {
+            const card = document.createElement('div');
+            card.id = c.id;
+            card.className = 'card';
+            card.textContent = c.text;
+            card.dataset.zone = c.zone;
+            this.makeDraggable(card);
+            pool.appendChild(card);
+        });
+        this.setupDropZones();
+    }
+
+    setupStage2() {
+        const pool = document.getElementById('s2-pool');
+        pool.innerHTML = '';
+        document.querySelectorAll('#screen-stage-2 .drop-zone').forEach(z => z.innerHTML = '');
+        document.getElementById('s2-cond-select').value = '';
+
+        const cards = [...GAME_DATA.stage2.cards].sort(() => Math.random() - 0.5);
+        cards.forEach(c => {
+            const card = document.createElement('div');
+            card.id = c.id;
+            card.className = 'card';
+            card.innerHTML = c.html || c.text;
+            card.dataset.zone = c.zone;
+            this.makeDraggable(card);
+            pool.appendChild(card);
+        });
+        this.setupDropZones();
+    }
+
+    setupStage3() {
+        const pool = document.getElementById('s3-pool');
+        pool.innerHTML = '';
+        document.getElementById('s3-z-eq1').innerHTML = '';
+        document.getElementById('s3-z-eq2').innerHTML = '';
+
+        const cards = [...GAME_DATA.stage3.cards].sort(() => Math.random() - 0.5);
+        cards.forEach(c => {
+            const card = document.createElement('div');
+            card.id = c.id;
+            card.className = 'card';
+            card.innerHTML = c.html || c.text;
+            card.dataset.zone = c.zone;
+            this.makeDraggable(card);
+            pool.appendChild(card);
+        });
+        this.setupDropZones();
+        this.updateStage3Display();
+    }
+
+    updateStage3Display() {
+        const z1 = document.getElementById('s3-z-eq1').querySelector('.card');
+        const z2 = document.getElementById('s3-z-eq2').querySelector('.card');
+        
+        document.getElementById('s3-display-eq1').innerHTML = z1 ? z1.innerHTML : '[Phương trình 1]';
+        document.getElementById('s3-display-eq2').innerHTML = z2 ? z2.innerHTML : '[Phương trình 2]';
+    }
+
+    setupStage4() {
+        document.getElementById('s4-val-x').value = '';
+        document.getElementById('s4-val-y').value = '';
+        document.querySelectorAll('input[name="s4-conclusion"]').forEach(r => r.checked = false);
+    }
+
+    setupConsolidation() {
+        const pool = document.getElementById('sc-pool');
+        pool.innerHTML = '';
+        document.querySelectorAll('#screen-consolidation .drop-zone').forEach(z => z.innerHTML = '');
+
+        const steps = [...GAME_DATA.consolidation.steps].sort(() => Math.random() - 0.5);
+        steps.forEach(s => {
+            const card = document.createElement('div');
+            card.id = s.id;
+            card.className = 'card';
+            card.textContent = s.text;
+            card.dataset.order = s.order;
+            this.makeDraggable(card);
+            pool.appendChild(card);
+        });
+        this.setupDropZones();
+    }
+
+    checkCurrentStage() {
+        if (this.currentStage === 1) this.checkStage1();
+        else if (this.currentStage === 2) this.checkStage2();
+        else if (this.currentStage === 3) this.checkStage3();
+        else if (this.currentStage === 4) this.checkStage4();
+        else if (this.currentStage === 5) this.checkConsolidation();
+    }
+
+    handleAttemptResult(isCorrect, successMsg, failMsg) {
+        if (isCorrect) {
+            this.setFeedback(successMsg, 'correct');
+            if (this.currentStage >= 1 && this.currentStage <= 4) {
+                this.keysUnlocked[this.currentStage - 1] = true;
+                this.updateUI();
+                document.getElementById('btn-next').disabled = false;
+            }
+        } else {
+            this.failedAttempts[this.currentStage] = (this.failedAttempts[this.currentStage] || 0) + 1;
+            if (this.failedAttempts[this.currentStage] >= 2) {
+                document.getElementById('btn-hint').disabled = false;
+            }
+            this.setFeedback(failMsg, 'incorrect');
+        }
+    }
+
+    checkStage1() {
+        const zones = ['mass', 'vol', 'density', 'target'];
+        let totalPlaced = 0;
+        let correctCount = 0;
+
+        zones.forEach(z => {
+            const zoneEl = document.getElementById(`s1-z-${z}`);
+            const cards = zoneEl.querySelectorAll('.card');
+            cards.forEach(card => {
+                totalPlaced++;
+                if (card.dataset.zone === z) correctCount++;
+            });
+        });
+
+        if (totalPlaced < 6) {
+            this.setFeedback("Bạn còn một số dữ kiện chưa xếp nhóm. Hãy hoàn thành tất cả thẻ!", "incorrect");
+            return;
+        }
+
+        const isCorrect = (correctCount === 6);
+        this.handleAttemptResult(
+            isCorrect,
+            "Chính xác! Bạn đã phân loại đúng toàn bộ dữ kiện của bài toán.",
+            "Hãy kiểm tra lại: Khối lượng đo bằng gram, thể tích đo bằng cm³, khối lượng riêng là khối lượng của 1 cm³."
+        );
+    }
+
+    checkStage2() {
+        const condVal = document.getElementById('s2-cond-select').value;
+        const volCuCard = document.getElementById('s2-z-vol-cu').querySelector('.card');
+        const volZnCard = document.getElementById('s2-z-vol-zn').querySelector('.card');
+
+        if (!condVal || !volCuCard || !volZnCard) {
+            this.setFeedback("Bạn chưa hoàn thành chọn điều kiện hoặc chưa ghép đủ biểu thức!", "incorrect");
+            return;
+        }
+
+        const isCorrect = (condVal === 'correct' && 
+                           volCuCard.dataset.zone === 'volCu' && 
+                           volZnCard.dataset.zone === 'volZn');
+
+        this.handleAttemptResult(
+            isCorrect,
+            "Mô hình đã được thiết lập chính xác!",
+            "Chưa chính xác: Kiểm tra lại điều kiện của ẩn (phải lớn hơn 0) và công thức tính thể tích (Khối lượng / Khối lượng riêng)."
+        );
+    }
+
+    checkStage3() {
+        const eq1Card = document.getElementById('s3-z-eq1').querySelector('.card');
+        const eq2Card = document.getElementById('s3-z-eq2').querySelector('.card');
+
+        if (!eq1Card || !eq2Card) {
+            this.setFeedback("Một hệ cần thể hiện đủ hai mối quan hệ. Bạn chưa ghép đủ 2 phương trình!", "incorrect");
+            return;
+        }
+
+        const isCorrect = (eq1Card.dataset.zone === 'eq1' && eq2Card.dataset.zone === 'eq2');
+
+        this.handleAttemptResult(
+            isCorrect,
+            "Hệ phương trình đã được kích hoạt thành công!",
+            "Chưa chính xác: Phương trình 1 biểu diễn tổng khối lượng (x + y = 124), Phương trình 2 biểu diễn tổng thể tích."
+        );
+    }
+
+    checkStage4() {
+        const valX = parseFloat(document.getElementById('s4-val-x').value);
+        const valY = parseFloat(document.getElementById('s4-val-y').value);
+        const selectedRadio = document.querySelector('input[name="s4-conclusion"]:checked');
+
+        if (isNaN(valX) || isNaN(valY) || !selectedRadio) {
+            this.setFeedback("Vui lòng nhập đủ nghiệm x, y và chọn câu trả lời kiểm định kết luận!", "incorrect");
+            return;
+        }
+
+        const isCorrect = (valX === GAME_DATA.stage4.correctX && 
+                           valY === GAME_DATA.stage4.correctY && 
+                           selectedRadio.value === 'correct');
+
+        this.handleAttemptResult(
+            isCorrect,
+            "Kiểm định thành công – Bạn đã thu thập đủ 4 chìa khóa!",
+            "Nghiệm chưa chính xác hoặc câu chọn sửa lỗi bị sai. Hãy nhớ: Đồng có khối lượng lớn hơn kẽm trong mẫu này (x=89, y=35)."
+        );
+    }
+
+    checkConsolidation() {
+        let correctCount = 0;
+        for (let i = 1; i <= 5; i++) {
+            const card = document.getElementById(`sc-z-${i}`).querySelector('.card');
+            if (card && parseInt(card.dataset.order) === i) {
+                correctCount++;
+            }
+        }
+
+        if (correctCount === 5) {
+            this.setFeedback("Chính xác! Bạn đã nắm vững quy trình giải bài toán bằng cách lập hệ phương trình.", "correct");
+            setTimeout(() => {
+                this.currentStage = 6;
+                this.showScreen('screen-summary');
+            }, 1500);
+        } else {
+            this.setFeedback("Thứ tự chưa đúng! Hãy suy nghĩ: Lập hệ phương trình gồm 3 bước đầu, sau đó tới giải hệ và kiểm tra trả lời.", "incorrect");
+        }
+    }
+
+    showHint() {
+        let hintText = "";
+        if (this.currentStage === 1) hintText = GAME_DATA.stage1.hint;
+        else if (this.currentStage === 2) hintText = GAME_DATA.stage2.hint;
+        else if (this.currentStage === 3) hintText = GAME_DATA.stage3.hint;
+        else if (this.currentStage === 4) hintText = GAME_DATA.stage4.hint;
+        else if (this.currentStage === 5) hintText = GAME_DATA.consolidation.hint;
+
+        this.setFeedback("💡 GỢI Ý: " + hintText, "hint");
+    }
+
+    resetCurrentStage() {
+        if (this.currentStage >= 1 && this.currentStage <= 4) {
+            this.startStage(this.currentStage);
+        } else if (this.currentStage === 5) {
+            this.setupConsolidation();
+            this.resetFeedback();
+        }
+    }
+
+    nextStage() {
+        if (this.currentStage >= 1 && this.currentStage < 4) {
+            this.startStage(this.currentStage + 1);
+        } else if (this.currentStage === 4) {
+            this.currentStage = 5;
+            this.setTeam(5);
+            this.showScreen('screen-consolidation');
+            this.setupConsolidation();
+            this.resetFeedback();
+            document.getElementById('btn-next').disabled = true;
+        }
+    }
+
+    restartGame() {
+        if (confirm("Bạn có chắc chắn muốn chơi lại từ đầu không? Toàn bộ tiến trình sẽ được đặt lại.")) {
+            this.keysUnlocked = [false, false, false, false];
+            this.failedAttempts = {};
+            this.currentStage = 0;
+            this.updateUI();
+            this.showScreen('screen-intro');
+        }
+    }
+}
+
+// Khởi tạo trò chơi khi trang web sẵn sàng
+let game;
+window.addEventListener('DOMContentLoaded', () => {
+    game = new GameController();
+});
+</script>
+</body>
+</html>
