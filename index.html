@@ -22,9 +22,7 @@ body {
     color: #243447;
 }
 
-/* =========================
-   PHẦN ĐẦU TRANG
-========================= */
+/* ===== PHẦN ĐẦU TRANG ===== */
 header {
     background: linear-gradient(135deg, #0b4f9c, #1677c8);
     color: white;
@@ -50,11 +48,9 @@ header p {
     opacity: 0.95;
 }
 
-/* =========================
-   KHUNG NỘI DUNG
-========================= */
+/* ===== NỘI DUNG ===== */
 .container {
-    max-width: 1150px;
+    max-width: 1100px;
     margin: 38px auto;
     padding: 0 20px;
 }
@@ -78,24 +74,21 @@ header p {
     color: #4a5568;
 }
 
-/* =========================
-   DANH SÁCH HỌC LIỆU
-========================= */
+/* ===== HỌC LIỆU ===== */
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+    display: flex;
+    justify-content: center;
 }
 
 .card {
+    width: 100%;
+    max-width: 600px;
     background: white;
     border-radius: 16px;
-    padding: 28px;
+    padding: 30px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     border-top: 5px solid #1677c8;
     transition: transform 0.25s, box-shadow 0.25s;
-    display: flex;
-    flex-direction: column;
 }
 
 .card:hover {
@@ -104,13 +97,12 @@ header p {
 }
 
 .icon {
-    font-size: 43px;
+    font-size: 46px;
     margin-bottom: 14px;
 }
 
 .tag {
     display: inline-block;
-    align-self: flex-start;
     background: #e9f3ff;
     color: #0b4f9c;
     padding: 6px 12px;
@@ -122,21 +114,18 @@ header p {
 .card h3 {
     color: #0b4f9c;
     margin: 4px 0 12px;
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .card p {
-    line-height: 1.65;
+    line-height: 1.7;
     font-size: 16px;
-    margin: 0 0 15px;
-    flex-grow: 1;
+    margin: 0 0 18px;
 }
 
 .btn {
     display: inline-block;
-    align-self: flex-start;
-    margin-top: 10px;
-    padding: 12px 21px;
+    padding: 12px 22px;
     background: #0b66c3;
     color: white;
     text-decoration: none;
@@ -149,11 +138,10 @@ header p {
     background: #084f99;
 }
 
-/* =========================
-   GHI CHÚ
-========================= */
+/* ===== THÔNG TIN ===== */
 .note {
-    margin-top: 38px;
+    max-width: 760px;
+    margin: 38px auto 0;
     background: white;
     border-radius: 12px;
     padding: 20px 24px;
@@ -161,18 +149,16 @@ header p {
     box-shadow: 0 3px 12px rgba(0,0,0,0.06);
 }
 
+.note p {
+    margin: 6px 0;
+    line-height: 1.65;
+}
+
 .note strong {
     color: #0b4f9c;
 }
 
-.note p {
-    margin: 6px 0;
-    line-height: 1.6;
-}
-
-/* =========================
-   CHÂN TRANG
-========================= */
+/* ===== CHÂN TRANG ===== */
 footer {
     margin-top: 48px;
     background: #e8eef5;
@@ -185,14 +171,10 @@ footer {
 
 footer strong {
     color: #0b4f9c;
-    font-size: 15px;
 }
 
-/* =========================
-   ĐIỆN THOẠI
-========================= */
+/* ===== ĐIỆN THOẠI ===== */
 @media (max-width: 600px) {
-
     header {
         padding: 36px 15px;
     }
@@ -219,10 +201,6 @@ footer strong {
         font-size: 24px;
     }
 
-    .grid {
-        grid-template-columns: 1fr;
-    }
-
     .card {
         padding: 23px;
     }
@@ -232,18 +210,12 @@ footer strong {
 
 <body>
 
-<!-- =========================
-     ĐẦU TRANG
-========================= -->
 <header>
     <h1>KHO HỌC LIỆU SỐ</h1>
     <h2>TOÁN – KHOA HỌC TỰ NHIÊN THCS</h2>
     <p>Học liệu hỗ trợ dạy học, luyện tập và tự học</p>
 </header>
 
-<!-- =========================
-     NỘI DUNG CHÍNH
-========================= -->
 <main class="container">
 
     <section class="intro">
@@ -257,7 +229,7 @@ footer strong {
 
     <section class="grid">
 
-        <!-- HỌC LIỆU 1 -->
+        <!-- HỌC LIỆU: CHUYẾN XE ĐẠI SỐ 9 -->
         <article class="card">
 
             <div class="icon">🚍</div>
@@ -279,14 +251,13 @@ footer strong {
             </a>
 
         </article>
-            
+
     </section>
-    <!-- GHI CHÚ -->
+
     <section class="note">
         <p>
             <strong>Phạm vi sử dụng:</strong>
-            Học liệu phục vụ hoạt động dạy học, luyện tập,
-            ôn tập và tự học.
+            Phục vụ hoạt động dạy học, luyện tập, ôn tập và tự học.
         </p>
 
         <p>
@@ -297,19 +268,11 @@ footer strong {
 
 </main>
 
-<!-- =========================
-     CHÂN TRANG
-========================= -->
 <footer>
-
     <strong>KHO HỌC LIỆU SỐ CÁ NHÂN</strong><br>
-
     Thiết kế và biên soạn: <strong>Bùi Thị Nghĩa</strong><br>
-
     Phục vụ dạy học và chia sẻ học liệu giáo dục<br>
-
     Năm học 2026 – 2027
-
 </footer>
 
 </body>
