@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kho học liệu số - Trường THCS Vinh Quang</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f4f7fb;
+    color: #243447;
+}
+
+header {
+    background: linear-gradient(135deg, #0b4f9c, #1677c8);
+    color: white;
+    text-align: center;
+    padding: 45px 20px;
+}
+
+header h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+}
+
+header h2 {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 500;
+}
+
+header p {
+    margin: 12px 0 0;
+    opacity: 0.95;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 0 20px;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.intro h2 {
+    color: #0b4f9c;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-top: 5px solid #1677c8;
+    transition: 0.25s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.13);
+}
+
+.icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.card h3 {
+    color: #0b4f9c;
+    margin: 5px 0 10px;
+}
+
+.tag {
+    display: inline-block;
+    background: #e9f3ff;
+    color: #0b4f9c;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.card p {
+    line-height: 1.6;
+    min-height: 75px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 11px 20px;
+    background: #0b66c3;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #084f99;
+}
+
+footer {
+    margin-top: 45px;
+    background: #e8eef5;
+    text-align: center;
+    padding: 22px 15px;
+    line-height: 1.7;
+    font-size: 14px;
+    color: #52606d;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 25px;
+    }
+
+    header h2 {
+        font-size: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>KHO HỌC LIỆU SỐ</h1>
+    <h2>TRƯỜNG THCS VINH QUANG</h2>
+    <p>Học liệu hỗ trợ dạy học, luyện tập và tự học</p>
+</header>
+
+<main class="container">
+
+    <section class="intro">
+        <h2>Học liệu tương tác</h2>
+        <p>
+            Lựa chọn học liệu phù hợp để học tập, luyện tập
+            và củng cố kiến thức.
+        </p>
+    </section>
+
+    <section class="grid">
+
+        <!-- HỌC LIỆU 1 -->
+        <article class="card">
+            <div class="icon">🚍</div>
+            <span class="tag">TOÁN 9 • HỌC LIỆU TƯƠNG TÁC</span>
+
+            <h3>Chuyến xe Đại số 9</h3>
+
+            <p>
+                Học liệu tương tác hỗ trợ học sinh ôn tập,
+                luyện tập và củng cố kiến thức Đại số lớp 9.
+            </p>
+
+            <a class="btn" href="Chuyenxe.html">
+                Mở học liệu →
+            </a>
+        </article>
+
+        <!-- HỌC LIỆU 2 -->
+        <article class="card">
+            <div class="icon">📘</div>
+            <span class="tag">TOÁN 9 • LUYỆN TẬP</span>
+
+            <h3>Bài tập Chương I</h3>
+
+            <p>
+                Học liệu hỗ trợ học sinh luyện tập,
+                củng cố và vận dụng kiến thức Chương I.
+            </p>
+
+            <a class="btn" href="baitapchuong1.html">
+                Mở học liệu →
+            </a>
+        </article>
+
+    </section>
+
+</main>
+
+<footer>
+    <strong>TRƯỜNG THCS VINH QUANG</strong><br>
+    Kho học liệu số phục vụ dạy học và tự học<br>
+    Năm học 2026 – 2027
+</footer>
+
+</body>
+</html>
