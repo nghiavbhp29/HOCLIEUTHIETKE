@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LENS EXPLORER – KHÁM PHÁ THẤU KÍNH (KHTN 9)</title>
+    <style>
+        :root {
+            --bg-dark: #0a0f1d;
+            --bg-card: rgba(18, 26, 47, 0.85);
+            --bg-card-border: #1e2d4a;
+            --accent-cyan: #00f2ff;
+            --accent-amber: #ffb703;
+            --accent-orange: #ff7b00;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-light: #f8fafc;
+            --text-dim: #94a3b8;
+            --laser-ray: #ff3366;
+            --laser-ray-ext: #38bdf8;
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(255, 123, 0, 0.08) 0%, transparent 40%);
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 1200px;
+            min-height: 680px;
+            height: 92vh;
+            background: var(--bg-card);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 242, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        header {
+            height: 70px;
+            padding: 0 24px;
+            background: rgba(10, 15, 29, 0.9);
+            border-bottom: 1px solid var(--bg-card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-orange));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+            box-shadow: 0 0 12px rgba(0, 242, 255, 0.4);
+        }
+
+        .logo-text h1 {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .designer-tag {
+            font-size: 0.75rem;
+            background: rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            color: var(--accent-cyan);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .progress-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 280px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-amber));
+            transition: width 0.4s ease;
+            box-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        .progress-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .stars-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .star-icon {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .star-icon.active {
+            color: var(--accent-amber);
+            text-shadow: 0 0 10px var(--accent-amber), 0 0 20px var(--accent-amber);
+            transform: scale(1.15);
+        }
+
+        main {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen {
+            position: absolute;
+            inset: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transform: translateY(10px);
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .welcome-center {
+            margin: auto;
+            text-align: center;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: var(--accent-amber);
+            font-weight: 500;
+        }
+
+        .hero-svg {
+            width: 280px;
+            height: 160px;
+            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.3));
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: #fff;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(0, 114, 255, 0.4);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 114, 255, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .briefing-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        .briefing-box h3 {
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .how-to-play-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .how-to-play-list li {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .how-to-play-list li span {
+            background: var(--accent-cyan);
+            color: #000;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+        }
+
+        .mission-card {
+            background: rgba(18, 26, 47, 0.9);
+            border: 2px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 180px;
+        }
+
+        .mission-card.unlocked {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.15);
+        }
+
+        .mission-card.unlocked:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 242, 255, 0.3);
+        }
+
+        .mission-card.completed {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .mission-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .mission-num {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent-amber);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .mission-card h4 {
+            font-size: 1.05rem;
+            margin: 8px 0;
+            color: #fff;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-badge.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .status-badge.available {
+            background: rgba(0, 242, 255, 0.2);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .status-badge.locked {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-dim);
+        }
+
+        .mission-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            height: 100%;
+            overflow: hidden;
+            padding-bottom: 8px;
+        }
+
+        @media (max-width: 900px) {
+            .mission-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                overflow-y: auto;
+            }
+        }
+
+        .workspace-area {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 380px;
+        }
+
+        .optics-svg {
+            width: 100%;
+            height: 100%;
+            max-height: 440px;
+            overflow: visible;
+        }
+
+        .side-panel {
+            background: rgba(10, 15, 29, 0.7);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .mission-header-info h2 {
+            font-size: 1.2rem;
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+        }
+
+        .mission-header-info p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .word-bank-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .word-card {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1.5px solid var(--accent-cyan);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: grab;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .word-card:hover {
+            background: rgba(0, 242, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .word-card.selected {
+            border-color: var(--accent-amber);
+            background: rgba(255, 183, 3, 0.2);
+            box-shadow: 0 0 12px rgba(255, 183, 3, 0.4);
+        }
+
+        .word-card.placed {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .target-slot {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .target-slot:hover {
+            filter: drop-shadow(0 0 6px var(--accent-cyan));
+        }
+
+        .target-slot.wrong rect {
+            stroke: var(--accent-red) !important;
+            fill: rgba(239, 68, 68, 0.25) !important;
+            stroke-dasharray: none !important;
+        }
+
+        .target-slot.correct rect {
+            stroke: var(--accent-green) !important;
+            fill: rgba(16, 185, 129, 0.2) !important;
+            stroke-dasharray: none !important;
+        }
+
+        .sentence-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .sentence-item {
+            background: rgba(18, 26, 47, 0.8);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .drop-zone-inline {
+            min-width: 160px;
+            height: 38px;
+            border: 2px dashed var(--accent-cyan);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            font-weight: bold;
+            color: var(--accent-amber);
+            background: rgba(0, 242, 255, 0.05);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .drop-zone-inline.filled {
+            border-style: solid;
+            background: rgba(0, 242, 255, 0.15);
+            color: #fff;
+        }
+
+        .drop-zone-inline.wrong {
+            border-color: var(--accent-red) !important;
+            border-style: solid !important;
+            background: rgba(239, 68, 68, 0.25) !important;
+            color: #ff9999 !important;
+        }
+
+        .drop-zone-inline.correct {
+            border-color: var(--accent-green) !important;
+            border-style: solid !important;
+            background: rgba(16, 185, 129, 0.2) !important;
+            color: #6ee7b7 !important;
+        }
+
+        .select-wrong {
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5) !important;
+            background-color: rgba(239, 68, 68, 0.15) !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        footer {
+            height: 70px;
+            padding: 0 24px;
+            background: rgba(10, 15, 29, 0.9);
+            border-top: 1px solid var(--bg-card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .action-group-left, .action-group-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feedback-banner {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            background: rgba(18, 26, 47, 0.95);
+            border: 2px solid var(--accent-cyan);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            z-index: 100;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .feedback-banner.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .feedback-banner.correct {
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+
+        .feedback-banner.wrong {
+            border-color: var(--accent-red);
+            color: #ff8888;
+        }
+
+        .feedback-banner.hint {
+            border-color: var(--accent-amber);
+            color: var(--accent-amber);
+        }
+
+        .btn-retry-inline {
+            background: var(--accent-red);
+            color: #fff;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-retry-inline:hover {
+            background: #dc2626;
+        }
+
+        .summary-card {
+            background: rgba(18, 26, 47, 0.7);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: left;
+            margin: 10px 0;
+        }
+
+        .summary-card h4 {
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .summary-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .summary-list li strong {
+            color: var(--accent-amber);
+        }
+
+        @keyframes glow-pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .glow-ray {
+            animation: glow-pulse 2s infinite ease-in-out;
+        }
+
+        .info-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .info-modal-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .info-modal-content {
+            background: rgba(18, 26, 47, 0.95);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(0, 242, 255, 0.2);
+            position: relative;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .info-card h3 {
+            color: var(--accent-cyan);
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.9rem;
+            line-height: 1.55;
+        }
+
+        .info-list li strong {
+            color: var(--accent-amber);
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- HEADER BAR -->
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon">LE</div>
+                <div class="logo-text">
+                    <h1>Lens Explorer</h1>
+                    <p>Khám Phá Thấu Kính • KHTN 9</p>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="game.toggleInfoModal(true)">
+                    ℹ️ Thông tin học liệu
+                </button>
+                <div class="designer-tag">
+                    🎨 Thiết kế: <strong>Bùi Thị Nghĩa</strong>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="stars-container">
+                    <span class="star-icon" id="star-1">★</span>
+                    <span class="star-icon" id="star-2">★</span>
+                    <span class="star-icon" id="star-3">★</span>
+                    <span class="star-icon" id="star-4">★</span>
+                    <span class="star-icon" id="star-5">★</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-label" id="progress-text">Thành tựu: 0 / 5 Nhiệm vụ</div>
+            </div>
+        </header>
+
+        <!-- MAIN SCREENS CONTAINER -->
+        <main id="main-content">
+
+            <section class="screen active" id="screen-welcome">
+                <div class="welcome-center">
+                    <svg class="hero-svg" viewBox="0 0 280 160">
+                        <line x1="10" y1="80" x2="270" y2="80" stroke="#00f2ff" stroke-width="2" stroke-dasharray="4 4"/>
+                        <path d="M 140 20 Q 120 80 140 140 Q 160 80 140 20 Z" fill="rgba(0,242,255,0.2)" stroke="#00f2ff" stroke-width="2.5"/>
+                        <circle cx="140" cy="80" r="4" fill="#ffb703"/>
+                        
+                        <!-- Amber light rays with directional arrows -->
+                        <line x1="20" y1="50" x2="135" y2="50" stroke="#ffb703" stroke-width="2"/>
+                        <polygon points="80,50 68,45 68,55" fill="#ffb703"/>
+                        <line x1="135" y1="50" x2="210" y2="80" stroke="#ffb703" stroke-width="2"/>
+                        <polygon points="172.5,65 160.5,60 160.5,70" fill="#ffb703" transform="rotate(21.80 172.5 65)"/>
+
+                        <line x1="20" y1="110" x2="135" y2="110" stroke="#ffb703" stroke-width="2"/>
+                        <polygon points="80,110 68,105 68,115" fill="#ffb703"/>
+                        <line x1="135" y1="110" x2="210" y2="80" stroke="#ffb703" stroke-width="2"/>
+                        <polygon points="172.5,95 160.5,90 160.5,100" fill="#ffb703" transform="rotate(-21.80 172.5 95)"/>
+                        
+                        <circle cx="210" cy="80" r="4" fill="#10b981"/>
+                    </svg>
+                    
+                    <h1 class="welcome-title">LENS EXPLORER<br>KHÁM PHÁ THẤU KÍNH</h1>
+                    <p class="welcome-subtitle">Explore light. Discover the lens.<br>(Quan sát ánh sáng, khám phá thấu kính)</p>
+
+                    <div style="font-size: 0.85rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 8px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                        👨‍🏫 <strong>Thiết kế nội dung:</strong> Bùi Thị Nghĩa • Trường THCS Vinh Quang
+                    </div>
+
+                    <button class="btn btn-success" id="btn-start-game">
+                        START – BẮT ĐẦU ➜
+                    </button>
+                </div>
+            </section>
+
+            <section class="screen" id="screen-briefing">
+                <div style="max-width: 800px; margin: auto; width: 100%; overflow-y: auto; max-height: 100%; padding-right: 4px;">
+                    <h2 style="color: var(--accent-cyan); font-size: 1.8rem; margin-bottom: 8px;">OPTICS LAB INCIDENT</h2>
+                    <p style="color: var(--text-dim);">Phòng thí nghiệm quang học vừa xảy ra sự cố xáo trộn dữ liệu. Bạn hãy trở thành <strong>Lens Explorer</strong> để khôi phục lại hệ thống!</p>
+
+                    <div class="info-card" style="border-color: rgba(0, 242, 255, 0.4); background: rgba(0, 242, 255, 0.05); margin-top: 16px;">
+                        <h3 style="color: var(--accent-cyan);">📚 THÔNG TIN HỌC LIỆU</h3>
+                        <ul class="info-list">
+                            <li><strong>1. Tên học liệu:</strong><br><span style="color: #fff;">LENS EXPLORER – KHÁM PHÁ THẤU KÍNH</span></li>
+                            <li><strong>2. Loại học liệu:</strong><br><span style="color: #fff;">Học liệu tương tác và mô phỏng.</span><br><span style="color: var(--text-dim); font-size: 0.85rem;">Hình thức: Trò chơi học tập tương tác tích hợp tiếng Anh.</span></li>
+                            <li><strong>3. Môn học – Cấp học – Lớp – Bài học:</strong>
+                                <div style="margin-left: 12px; margin-top: 4px; color: var(--text-dim);">
+                                    • Môn: Khoa học tự nhiên &nbsp;|&nbsp; Cấp học: THCS – Lớp 9 &nbsp;|&nbsp; Bài 8: Thấu kính<br>
+                                    • Nội dung: Trục chính, quang tâm, tiêu điểm chính và tiêu cự của thấu kính.
+                                </div>
+                            </li>
+                            <li><strong>4. Mục tiêu và mục đích sử dụng:</strong>
+                                <div style="margin-left: 12px; margin-top: 4px; color: var(--text-dim);">
+                                    • Hỗ trợ học sinh nhận biết, xác định trục chính, quang tâm O, tiêu điểm chính F, tiêu cự; nhận biết OF = f; quan sát và phân tích đường truyền tia sáng qua thấu kính; sử dụng một số thuật ngữ khoa học bằng tiếng Anh.<br>
+                                    • Học liệu được sử dụng hỗ trợ hoạt động hình thành kiến thức, luyện tập và củng cố.
+                                </div>
+                            </li>
+                            <li><strong>5. Đối tượng sử dụng:</strong><br><span style="color: #fff;">Học sinh lớp 9 và giáo viên Khoa học tự nhiên.</span></li>
+                            <li><strong>6. Hướng dẫn khai thác:</strong>
+                                <div style="margin-left: 12px; margin-top: 4px; color: var(--text-dim);">
+                                    • Học sinh thực hiện lần lượt các nhiệm vụ: <i>Discover the Words → Find O and F → Build the Science → Light Ray Challenge → Final Mission.</i><br>
+                                    • Học liệu có thể sử dụng cho cá nhân hoặc hoạt động nhóm; học sinh quan sát, dự đoán, thảo luận, thao tác, nhận phản hồi và thử lại khi cần.<br>
+                                    • Giáo viên tổ chức, hỗ trợ và chốt kiến thức phù hợp với tiến trình bài học.
+                                </div>
+                            </li>
+                            <li><strong>7. Tác giả và nguồn học liệu:</strong>
+                                <div style="margin-left: 12px; margin-top: 4px; color: var(--text-dim);">
+                                    • <strong>Thiết kế:</strong> Bùi Thị Nghĩa &nbsp;|&nbsp; <strong>Đơn vị:</strong> Trường THCS Vinh Quang<br>
+                                    • <strong>Nguồn nội dung:</strong><br>
+                                    &nbsp;&nbsp;- Chương trình Giáo dục phổ thông 2018 môn Khoa học tự nhiên.<br>
+                                    &nbsp;&nbsp;- Sách giáo khoa Khoa học tự nhiên 9 trang 41.<br>
+                                    &nbsp;&nbsp;- Nội dung chuyên môn được giáo viên lựa chọn, kiểm tra và điều chỉnh phù hợp với mục tiêu của bài học. Các sơ đồ, đối tượng trực quan và thành phần tương tác được thiết kế phục vụ hoạt động học tập.<br>
+                                    &nbsp;&nbsp;- Học liệu có sử dụng công cụ trí tuệ nhân tạo hỗ trợ trong quá trình thiết kế và phát triển sản phẩm; nội dung chuyên môn và sản phẩm hoàn thiện được giáo viên kiểm tra, xác minh và điều chỉnh trước khi sử dụng.
+                                </div>
+                            </li>
+                            <li><strong>8. Bản quyền và phạm vi sử dụng:</strong>
+                                <div style="margin-left: 12px; margin-top: 4px; color: var(--text-dim);">
+                                    Học liệu được xây dựng với mục đích phục vụ giáo dục và chia sẻ công khai, rộng rãi. Giáo viên, học sinh, cơ sở giáo dục và người quan tâm được tự do khai thác, sử dụng, chia sẻ, điều chỉnh và tái sử dụng học liệu phù hợp với mục đích dạy học và học tập.
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="briefing-box">
+                        <h3>📋 CÁCH CHƠI & QUY TẮC LÀM LẠI</h3>
+                        <ul class="how-to-play-list">
+                            <li><span>1</span> Quan sát kĩ sơ đồ và hiện tượng ánh sáng truyền qua thấu kính.</li>
+                            <li><span>2</span> Kéo-thả hoặc BẤM CHỌN thẻ thuật ngữ rồi bấm vào vị trí tương ứng.</li>
+                            <li><span>3</span> Nhấn nút <strong>CHECK – KIỂM TRA</strong> để kiểm tra kết quả.</li>
+                            <li><span>4</span> 🔄 <strong>Làm lại dễ dàng:</strong> Bấm vào ô đã chọn để xóa/thay đổi. Nếu làm sai, các vị trí lỗi sẽ hiển thị viền đỏ và bạn có thể thử lại không giới hạn số lần!</li>
+                            <li><span>5</span> Nhận 1 biểu tượng ★ khi hoàn thành mỗi Nhiệm vụ.</li>
+                        </ul>
+                    </div>
+
+                    <div style="display: flex; justify-content: center; gap: 16px;">
+                        <button class="btn btn-secondary" onclick="game.showScreen('welcome')">❮ QUAY LẠI</button>
+                        <button class="btn btn-success" id="btn-start-briefing">BẮT ĐẦU NHIỆM VỤ ➜</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="screen" id="screen-map">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h2 style="color: var(--accent-cyan); font-size: 1.6rem;">MISSION MAP – BẢN ĐỒ NHIỆM VỤ</h2>
+                    <p style="color: var(--text-dim); font-size: 0.9rem;">Chọn nhiệm vụ đã được mở khóa để thực hiện</p>
+                </div>
+
+                <div class="mission-grid" id="mission-grid">
+                    <!-- Dynamic rendering via JavaScript -->
+                </div>
+            </section>
+
+            <!-- MISSION 1 SCREEN -->
+            <section class="screen" id="screen-mission-1">
+                <div class="mission-layout">
+                    <div class="workspace-area" id="area-m1">
+                        <svg class="optics-svg" viewBox="0 0 600 380" id="svg-m1">
+                            <line x1="20" y1="190" x2="580" y2="190" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 4"/>
+                            <path d="M 300 70 Q 275 190 300 310 Q 325 190 300 70 Z" fill="rgba(0, 242, 255, 0.15)" stroke="#00f2ff" stroke-width="3"/>
+                            
+                            <circle cx="300" cy="190" r="7" fill="#ffb703" stroke="#fff" stroke-width="2"/>
+                            <text x="282" y="212" fill="#ffb703" font-size="18" font-weight="bold">O</text>
+
+                            <circle cx="450" cy="190" r="7" fill="#10b981" stroke="#fff" stroke-width="2"/>
+                            <text x="450" y="215" fill="#10b981" font-size="18" font-weight="bold" text-anchor="middle">F</text>
+
+                            <path d="M 300 235 L 300 245 L 450 245 L 450 235" fill="none" stroke="#ff7b00" stroke-width="2"/>
+                            <text x="375" y="260" fill="#ff7b00" font-size="14" font-weight="bold" text-anchor="middle">f (OF)</text>
+
+                            <!-- TARGET SLOTS FOR MATCHING -->
+                            <g class="target-slot" id="slot-m1-axis" onclick="game.handleSlotClick('axis')">
+                                <rect x="15" y="20" width="190" height="38" rx="8" fill="rgba(15, 23, 42, 0.95)" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4"/>
+                                <text x="110" y="44" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle" id="text-m1-axis"></text>
+                            </g>
+                            <line x1="110" y1="58" x2="110" y2="188" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <circle cx="110" cy="190" r="4" fill="#38bdf8"/>
+
+                            <g class="target-slot" id="slot-m1-centre" onclick="game.handleSlotClick('centre')">
+                                <rect x="215" y="10" width="170" height="38" rx="8" fill="rgba(15, 23, 42, 0.95)" stroke="#ffb703" stroke-width="2" stroke-dasharray="4"/>
+                                <text x="300" y="34" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle" id="text-m1-centre"></text>
+                            </g>
+                            <line x1="300" y1="48" x2="300" y2="182" stroke="#ffb703" stroke-width="2" stroke-dasharray="3 3"/>
+                            <polygon points="300,188 295,178 305,178" fill="#ffb703"/>
+
+                            <g class="target-slot" id="slot-m1-focus" onclick="game.handleSlotClick('focus')">
+                                <rect x="395" y="20" width="190" height="38" rx="8" fill="rgba(15, 23, 42, 0.95)" stroke="#10b981" stroke-width="2" stroke-dasharray="4"/>
+                                <text x="490" y="44" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle" id="text-m1-focus"></text>
+                            </g>
+                            <line x1="490" y1="58" x2="452" y2="182" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <polygon points="450,188 450,178 458,182" fill="#10b981"/>
+
+                            <g class="target-slot" id="slot-m1-length" onclick="game.handleSlotClick('length')">
+                                <rect x="280" y="280" width="190" height="38" rx="8" fill="rgba(15, 23, 42, 0.95)" stroke="#ff7b00" stroke-width="2" stroke-dasharray="4"/>
+                                <text x="375" y="304" fill="#94a3b8" font-size="12" font-weight="bold" text-anchor="middle" id="text-m1-length"></text>
+                            </g>
+                            <line x1="375" y1="265" x2="375" y2="280" stroke="#ff7b00" stroke-width="1.5" stroke-dasharray="2 2"/>
+                        </svg>
+                    </div>
+
+                    <div class="side-panel">
+                        <div class="mission-header-info">
+                            <h2>MISSION 1: DISCOVER THE WORDS</h2>
+                            <p>Look at the diagram. Match the words with the correct parts.<br><i>(Ghép thuật ngữ tiếng Anh với các vị trí thích hợp)</i></p>
+                        </div>
+
+                        <div class="word-bank-container" id="word-bank-m1"></div>
+
+                        <div style="font-size: 0.8rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
+                            💡 <strong>Cách chọn & sửa lại:</strong> Bấm chọn 1 thẻ rồi bấm ô trống. Muốn bỏ thẻ đã điền, <strong>bấm trực tiếp vào ô đó để xóa và làm lại!</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MISSION 2 SCREEN -->
+            <section class="screen" id="screen-mission-2">
+                <div class="mission-layout">
+                    <div class="workspace-area">
+                        <svg class="optics-svg" viewBox="0 0 600 350" id="svg-m2">
+                            <line x1="30" y1="175" x2="570" y2="175" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 4" class="m2-element" id="m2-axis-line"/>
+                            <path d="M 300 50 Q 275 175 300 300 Q 325 175 300 50 Z" fill="rgba(0, 242, 255, 0.15)" stroke="#00f2ff" stroke-width="3"/>
+
+                            <g id="m2-rays">
+                                <line x1="50" y1="100" x2="300" y2="100" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="175,100 163,95 163,105" fill="#ffb703"/>
+
+                                <line x1="300" y1="100" x2="550" y2="225" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="425,162.5 413,157.5 413,167.5" fill="#ffb703" transform="rotate(26.565 425 162.5)"/>
+
+                                <line x1="50" y1="250" x2="300" y2="250" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="175,250 163,245 163,255" fill="#ffb703"/>
+
+                                <line x1="300" y1="250" x2="550" y2="125" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="425,187.5 413,182.5 413,192.5" fill="#ffb703" transform="rotate(-26.565 425 187.5)"/>
+                            </g>
+                            
+                            <g style="cursor: pointer;" onclick="game.handleM2Click('O')">
+                                <circle cx="300" cy="175" r="16" fill="rgba(0,242,255,0.2)" stroke="#00f2ff" stroke-width="2"/>
+                                <circle cx="300" cy="175" r="6" fill="#ffb703"/>
+                                <text x="300" y="210" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">O</text>
+                            </g>
+
+                            <g style="cursor: pointer;" onclick="game.handleM2Click('F')">
+                                <circle cx="450" cy="175" r="16" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                                <circle cx="450" cy="175" r="6" fill="#10b981"/>
+                                <text x="450" y="210" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">F</text>
+                            </g>
+
+                            <rect x="40" y="160" width="200" height="30" fill="transparent" style="cursor: pointer;" onclick="game.handleM2Click('axis')"/>
+
+                            <g style="cursor: pointer;" onclick="game.handleM2Click('OF')">
+                                <rect x="310" y="180" width="130" height="30" fill="rgba(255,123,0,0.1)" rx="6" stroke="#ff7b00" stroke-dasharray="2 2"/>
+                                <text x="375" y="200" fill="#ff7b00" font-size="13" font-weight="bold" text-anchor="middle">Khoảng OF</text>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="side-panel">
+                        <div class="mission-header-info">
+                            <h2>MISSION 2: FIND O AND F</h2>
+                            <p>Identify key lens elements based on light behavior.<br><i>(Xác định các thành phần dựa vào hiện tượng ánh sáng)</i></p>
+                        </div>
+
+                        <div id="m2-question-box" style="background: rgba(0,0,0,0.3); padding: 16px; border-radius: 12px; border: 1px solid var(--accent-cyan);"></div>
+
+                        <div id="m2-step-tracker" style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                            <span class="status-badge available" id="m2-s1">1. Optical Centre O</span>
+                            <span class="status-badge locked" id="m2-s2">2. Principal Focus F</span>
+                            <span class="status-badge locked" id="m2-s3">3. Principal Axis</span>
+                            <span class="status-badge locked" id="m2-s4">4. Focal Length OF</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MISSION 3 SCREEN -->
+            <section class="screen" id="screen-mission-3">
+                <div class="mission-layout">
+                    <div class="workspace-area" style="justify-content: flex-start; padding-top: 24px;" id="area-m3">
+                        <h3 style="color: var(--accent-cyan); margin-bottom: 20px;">BUILD THE SCIENCE – HOÀN THÀNH CÂU KHOA HỌC</h3>
+                        <div class="sentence-list" id="m3-sentence-list"></div>
+                    </div>
+
+                    <div class="side-panel">
+                        <div class="mission-header-info">
+                            <h2>WORD BANK</h2>
+                            <p>Select terms to fill into blanks.<br><i>(Chọn từ điền vào ô trống. Bấm vào ô đã chọn để xóa làm lại)</i></p>
+                        </div>
+
+                        <div class="word-bank-container" id="word-bank-m3"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MISSION 4 SCREEN -->
+            <section class="screen" id="screen-mission-4">
+                <div class="mission-layout">
+                    <div class="workspace-area" style="display: grid; grid-template-rows: 1fr 1fr; gap: 10px; padding: 10px;" id="area-m4">
+                        <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px 14px 6px; display: flex; flex-direction: column; overflow: hidden;">
+                            <div style="font-size: 0.85rem; font-weight: bold; color: var(--accent-cyan); margin-bottom: 6px;">CONVERGING LENS (THẤU KÍNH HỘI TỤ)</div>
+                            <div style="flex: 1; min-height: 0;">
+                                <svg viewBox="0 0 500 120" style="width: 100%; height: 100%; display: block;">
+                                    <line x1="20" y1="60" x2="480" y2="60" stroke="#38bdf8" stroke-dasharray="4"/>
+                                    <path d="M 250 10 Q 235 60 250 110 Q 265 60 250 10 Z" fill="rgba(0,242,255,0.2)" stroke="#00f2ff"/>
+                                    <circle cx="250" cy="60" r="4" fill="#ffb703"/>
+                                    <circle cx="370" cy="60" r="4" fill="#10b981"/>
+                                    <text x="370" y="80" fill="#10b981" font-size="12" text-anchor="middle">F</text>
+
+                                    <line x1="30" y1="30" x2="250" y2="30" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="140,30 128,25 128,35" fill="#ffb703"/>
+                                    <line x1="250" y1="30" x2="430" y2="75" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="340,52.5 328,47.5 328,57.5" fill="#ffb703" transform="rotate(14.04 340 52.5)"/>
+
+                                    <line x1="30" y1="90" x2="250" y2="90" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="140,90 128,85 128,95" fill="#ffb703"/>
+                                    <line x1="250" y1="90" x2="430" y2="45" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="340,67.5 328,62.5 328,72.5" fill="#ffb703" transform="rotate(-14.04 340 67.5)"/>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div style="background: rgba(0,0,0,0.3); border-radius: 10px; padding: 12px 14px 6px; display: flex; flex-direction: column; overflow: hidden;">
+                            <div style="font-size: 0.85rem; font-weight: bold; color: var(--accent-orange); margin-bottom: 6px;">DIVERGING LENS (THẤU KÍNH PHÂN KÌ)</div>
+                            <div style="flex: 1; min-height: 0;">
+                                <svg viewBox="0 0 500 130" style="width: 100%; height: 100%; display: block;">
+                                    <line x1="20" y1="65" x2="480" y2="65" stroke="#38bdf8" stroke-dasharray="4"/>
+                                    <path d="M 240 10 L 260 10 L 250 65 L 260 120 L 240 120 L 250 65 Z" fill="rgba(255,123,0,0.2)" stroke="#ff7b00"/>
+                                    <circle cx="250" cy="65" r="4" fill="#ffb703"/>
+                                    <circle cx="130" cy="65" r="4" fill="#10b981"/>
+                                    <text x="130" y="85" fill="#10b981" font-size="12" text-anchor="middle">F'</text>
+
+                                    <line x1="30" y1="40" x2="250" y2="40" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="140,40 128,35 128,45" fill="#ffb703"/>
+                                    <line x1="250" y1="40" x2="430" y2="2.5" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="340,21.25 328,16.25 328,26.25" fill="#ffb703" transform="rotate(-11.77 340 21.25)"/>
+                                    <line x1="250" y1="40" x2="130" y2="65" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+                                    <line x1="30" y1="90" x2="250" y2="90" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="140,90 128,85 128,95" fill="#ffb703"/>
+                                    <line x1="250" y1="90" x2="430" y2="127.5" stroke="#ffb703" stroke-width="2"/>
+                                    <polygon points="340,108.75 328,103.75 328,113.75" fill="#ffb703" transform="rotate(11.77 340 108.75)"/>
+                                    <line x1="250" y1="90" x2="130" y2="65" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 3"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="side-panel">
+                        <div class="mission-header-info">
+                            <h2>MISSION 4: LIGHT RAY CHALLENGE</h2>
+                            <p>Complete the scientific descriptions for both lens types.<br><i>(Hoàn thành mô tả đặc điểm tia sáng)</i></p>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 14px;" id="m4-questions"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MISSION 5 SCREEN -->
+            <section class="screen" id="screen-mission-5">
+                <div class="mission-layout">
+                    <div class="workspace-area">
+                        <div style="position: absolute; top: 12px; left: 16px; color: var(--accent-red); font-weight: bold; font-size: 0.9rem;">
+                            ⚠️ SCIENTIFIC ERROR DETECTED IN LAB SYSTEM!
+                        </div>
+
+                        <svg class="optics-svg" viewBox="0 0 600 320" id="svg-m5">
+                            <line x1="30" y1="160" x2="570" y2="160" stroke="#38bdf8" stroke-dasharray="4"/>
+                            
+                            <path d="M 290 40 L 310 40 L 300 160 L 310 280 L 290 280 L 300 160 Z" fill="rgba(255,123,0,0.2)" stroke="#ff7b00" stroke-width="2"/>
+                            <circle cx="300" cy="160" r="5" fill="#ffb703"/>
+                            <text x="300" y="185" fill="#ffb703" font-size="14" font-weight="bold" text-anchor="middle">O</text>
+
+                            <circle cx="450" cy="160" r="5" fill="#10b981"/>
+                            <text x="450" y="185" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">F</text>
+
+                            <circle cx="150" cy="160" r="5" fill="#10b981"/>
+                            <text x="150" y="185" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">F'</text>
+
+                            <!-- Faulty Diagram State -->
+                            <g id="m5-faulty-rays" style="cursor: pointer;" onclick="game.handleM5ClickError()">
+                                <line x1="50" y1="100" x2="300" y2="100" stroke="#ffb703" stroke-width="3"/>
+                                <polygon points="175,100 163,95 163,105" fill="#ffb703"/>
+                                <line x1="300" y1="100" x2="450" y2="160" stroke="#ffb703" stroke-width="3" stroke-dasharray="6 2"/>
+                                <polygon points="375,130 363,125 363,135" fill="#ffb703" transform="rotate(21.80 375 130)"/>
+
+                                <line x1="50" y1="220" x2="300" y2="220" stroke="#ffb703" stroke-width="3"/>
+                                <polygon points="175,220 163,215 163,225" fill="#ffb703"/>
+                                <line x1="300" y1="220" x2="450" y2="160" stroke="#ffb703" stroke-width="3" stroke-dasharray="6 2"/>
+                                <polygon points="375,190 363,185 363,195" fill="#ffb703" transform="rotate(-21.80 375 190)"/>
+
+                                <rect x="290" y="50" width="200" height="220" fill="transparent"/>
+                            </g>
+
+                            <!-- Corrected Diagram State -->
+                            <g id="m5-corrected-rays" style="display: none;">
+                                <line x1="50" y1="100" x2="300" y2="100" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="175,100 163,95 163,105" fill="#ffb703"/>
+                                <line x1="300" y1="100" x2="520" y2="12" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="410,56 398,51 398,61" fill="#ffb703" transform="rotate(-21.80 410 56)"/>
+                                <line x1="300" y1="100" x2="150" y2="160" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 4"/>
+
+                                <line x1="50" y1="220" x2="300" y2="220" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="175,220 163,215 163,225" fill="#ffb703"/>
+                                <line x1="300" y1="220" x2="520" y2="308" stroke="#ffb703" stroke-width="2.5"/>
+                                <polygon points="410,264 398,259 398,269" fill="#ffb703" transform="rotate(21.80 410 264)"/>
+                                <line x1="300" y1="220" x2="150" y2="160" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 4"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="side-panel">
+                        <div class="mission-header-info">
+                            <h2>FINAL MISSION: SPOT THE MISTAKE</h2>
+                            <p>Detect and correct the scientific error in the diverging lens diagram.<br><i>(Phát hiện và sửa lỗi sơ đồ thấu kính phân kì)</i></p>
+                        </div>
+
+                        <div id="m5-interaction-box" style="display: flex; flex-direction: column; gap: 14px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SUMMARY SCREEN -->
+            <section class="screen" id="screen-summary">
+                <div style="max-width: 850px; margin: auto; width: 100%; text-align: center; overflow-y: auto; max-height: 100%;">
+                    <div style="font-size: 3rem; margin-bottom: 10px;">🎉 🌟 🔬</div>
+                    <h1 style="color: var(--accent-cyan); font-size: 2.2rem;">OPTICS LAB RESTORED!</h1>
+                    <p style="color: var(--accent-amber); font-weight: bold; font-size: 1.1rem; margin-bottom: 16px;">
+                        PHÒNG THÍ NGHIỆM ĐÃ ĐƯỢC KHÔI PHỤC HOÀN TOÀN!
+                    </p>
+
+                    <div class="summary-card">
+                        <h4>WHAT HAVE YOU DISCOVERED? (KIẾN THỨC BẠN ĐÃ KHÁM PHÁ)</h4>
+                        <ul class="summary-list">
+                            <li><strong>O – Optical centre (Quang tâm):</strong> Một điểm của thấu kính mà mọi tia sáng tới O đều truyền thẳng qua thấu kính</li>
+                            <li><strong>Trục chính (Principal axis):</strong> Đường thẳng đi qua quang tâm O và vuông góc với thấu kính.</li>
+                            <li><strong>F – Principal focus (Tiêu điểm chính):</strong> Điểm hội tụ của chùm tia ló (hoặc đường kéo dài của chùm tia ló).</li>
+                            <li><strong>OF – Focal length (Tiêu cự f):</strong> Khoảng cách từ quang tâm O đến tiêu điểm F (OF = f).</li>
+                            <li><strong>Converging lens (Thấu kính hội tụ):</strong> Chùm tia tới song song cho chùm tia ló <em>hội tụ tại F</em>.</li>
+                            <li><strong>Diverging lens (Thấu kính phân kì):</strong> Chùm tia tới song song cho chùm tia ló <em>phân kì</em>, đường kéo dài gặp nhau tại F.</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 16px;">
+                        <button class="btn btn-warning" onclick="game.resetAllProgress()">
+                            🔄 PLAY AGAIN – CHƠI LẠI
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- INFO MODAL -->
+        <div class="info-modal-backdrop" id="info-modal" onclick="if(event.target === this) game.toggleInfoModal(false)">
+            <div class="info-modal-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--bg-card-border); padding-bottom: 12px;">
+                    <h2 style="color: var(--accent-cyan); font-size: 1.3rem; margin: 0;">📚 THÔNG TIN HỌC LIỆU</h2>
+                    <button style="background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer;" onclick="game.toggleInfoModal(false)">✕</button>
+                </div>
+                <ul class="info-list">
+                    <li><strong>1. Tên học liệu:</strong><br><span style="color: #fff;">LENS EXPLORER – KHÁM PHÁ THẤU KÍNH</span></li>
+                    <li><strong>2. Loại học liệu:</strong><br><span style="color: #fff;">Học liệu tương tác và mô phỏng.</span><br><span style="color: var(--text-dim); font-size: 0.85rem;">Hình thức: Trò chơi học tập tương tác tích hợp tiếng Anh.</span></li>
+                    <li><strong>3. Môn học – Cấp học – Lớp – Bài học:</strong>
+                        <div style="margin-left: 10px; margin-top: 4px; color: var(--text-dim);">
+                            • Môn: Khoa học tự nhiên &nbsp;|&nbsp; Cấp học: THCS – Lớp 9 &nbsp;|&nbsp; Bài 8: Thấu kính<br>
+                            • Nội dung: Trục chính, quang tâm, tiêu điểm chính và tiêu cự của thấu kính.
+                        </div>
+                    </li>
+                    <li><strong>4. Mục tiêu và mục đích sử dụng:</strong>
+                        <div style="margin-left: 10px; margin-top: 4px; color: var(--text-dim);">
+                            • Hỗ trợ học sinh nhận biết, xác định trục chính, quang tâm O, tiêu điểm chính F, tiêu cự; nhận biết OF = f; quan sát và phân tích đường truyền tia sáng qua thấu kính; sử dụng một số thuật ngữ khoa học bằng tiếng Anh.<br>
+                            • Học liệu được sử dụng hỗ trợ hoạt động hình thành kiến thức, luyện tập và củng cố.
+                        </div>
+                    </li>
+                    <li><strong>5. Đối tượng sử dụng:</strong><br><span style="color: #fff;">Học sinh lớp 9 và giáo viên Khoa học tự nhiên.</span></li>
+                    <li><strong>6. Hướng dẫn khai thác:</strong>
+                        <div style="margin-left: 10px; margin-top: 4px; color: var(--text-dim);">
+                            • Học sinh thực hiện lần lượt các nhiệm vụ: <i>Discover the Words → Find O and F → Build the Science → Light Ray Challenge → Final Mission.</i><br>
+                            • Học liệu có thể sử dụng cho cá nhân hoặc hoạt động nhóm; học sinh quan sát, dự đoán, thảo luận, thao tác, nhận phản hồi và thử lại khi cần.<br>
+                            • Giáo viên tổ chức, hỗ trợ và chốt kiến thức phù hợp với tiến trình bài học.
+                        </div>
+                    </li>
+                    <li><strong>7. Tác giả và nguồn học liệu:</strong>
+                        <div style="margin-left: 10px; margin-top: 4px; color: var(--text-dim);">
+                            • <strong>Thiết kế:</strong> Bùi Thị Nghĩa &nbsp;|&nbsp; <strong>Đơn vị:</strong> Trường THCS Vinh Quang<br>
+                            • <strong>Nguồn nội dung:</strong><br>
+                            &nbsp;&nbsp;- Chương trình Giáo dục phổ thông 2018 môn Khoa học tự nhiên.<br>
+                            &nbsp;&nbsp;- Sách giáo khoa Khoa học tự nhiên 9 trang 41.<br>
+                            &nbsp;&nbsp;- Nội dung chuyên môn được giáo viên lựa chọn, kiểm tra và điều chỉnh phù hợp với mục tiêu của bài học. Các sơ đồ, đối tượng trực quan và thành phần tương tác được thiết kế phục vụ hoạt động học tập.<br>
+                            &nbsp;&nbsp;- Học liệu có sử dụng công cụ trí tuệ nhân tạo hỗ trợ trong quá trình thiết kế và phát triển sản phẩm; nội dung chuyên môn và sản phẩm hoàn thiện được giáo viên kiểm tra, xác minh và điều chỉnh trước khi sử dụng.
+                        </div>
+                    </li>
+                    <li><strong>8. Bản quyền và phạm vi sử dụng:</strong>
+                        <div style="margin-left: 10px; margin-top: 4px; color: var(--text-dim);">
+                            Học liệu được xây dựng với mục đích phục vụ giáo dục và chia sẻ công khai, rộng rãi. Giáo viên, học sinh, cơ sở giáo dục và người quan tâm được tự do khai thác, sử dụng, chia sẻ, điều chỉnh và tái sử dụng học liệu phù hợp với mục đích dạy học và học tập.
+                        </div>
+                    </li>
+                </ul>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="game.toggleInfoModal(false)">ĐÓNG</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEEDBACK BANNER -->
+        <div class="feedback-banner" id="feedback-banner">
+            <span id="feedback-icon">✓</span>
+            <span id="feedback-text">Message content</span>
+            <button class="btn-retry-inline" id="btn-banner-retry" style="display:none;" onclick="game.clearWrongAndRetry()">Try Again</button>
+        </div>
+
+        <!-- FOOTER CONTROL BAR -->
+        <footer>
+            <div class="action-group-left">
+                <button class="btn btn-secondary" id="btn-back" onclick="game.handleBackNav()">❮ BACK</button>
+                <button class="btn btn-warning" id="btn-hint" onclick="game.showHint()">💡 HINT</button>
+            </div>
+
+            <div class="action-group-right">
+                <button class="btn btn-warning" id="btn-try-again" onclick="game.resetCurrentMission()">🔄 RESTART</button>
+                <button class="btn btn-success" id="btn-check" onclick="game.checkCurrentMission()">CHECK – KIỂM TRA</button>
+                <button class="btn btn-success" id="btn-next" onclick="game.handleNextNav()" disabled>NEXT ❯</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playBeep(freq = 440, type = 'sine', duration = 0.15) {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e){}
+            }
+
+            playSuccess() {
+                this.playBeep(523.25, 'sine', 0.1);
+                setTimeout(() => this.playBeep(659.25, 'sine', 0.1), 100);
+                setTimeout(() => this.playBeep(783.99, 'sine', 0.25), 200);
+            }
+
+            playError() {
+                this.playBeep(220, 'sawtooth', 0.15);
+                setTimeout(() => this.playBeep(180, 'sawtooth', 0.2), 120);
+            }
+
+            playStar() {
+                this.playBeep(880, 'triangle', 0.1);
+                setTimeout(() => this.playBeep(1318.5, 'triangle', 0.3), 100);
+            }
+        }
+
+        const sfx = new SoundFX();
+
+        class LensExplorerGame {
+            constructor() {
+                this.currentScreen = 'welcome';
+                this.completedMissions = [false, false, false, false, false];
+                this.selectedCard = null;
+                this.activeMissionNum = 1;
+
+                this.m1State = { axis: null, centre: null, focus: null, length: null };
+                this.m1Status = { axis: null, centre: null, focus: null, length: null };
+                
+                this.m2Step = 1;
+                
+                this.m3State = { q1: null, q2: null, q3: null, q4: null };
+                this.m3Status = { q1: null, q2: null, q3: null, q4: null };
+
+                this.m4State = { q1: null, q2: null, q3: null };
+                this.m4Status = { q1: null, q2: null, q3: null };
+
+                this.m5State = { errorClicked: false, fixSelected: null };
+
+                this.m1Words = [
+                    { id: 'axis', text: 'Principal axis' },
+                    { id: 'centre', text: 'Optical centre' },
+                    { id: 'focus', text: 'Principal focus' },
+                    { id: 'length', text: 'Focal length' }
+                ];
+
+                this.m3Words = [
+                    { id: 'principal focus', text: 'Principal focus' },
+                    { id: 'optical centre', text: 'Optical centre' },
+                    { id: 'focal length', text: 'Focal length' },
+                    { id: 'principal axis', text: 'Principal axis' }
+                ];
+            }
+
+            speakText(text) {
+                if ('speechSynthesis' in window && text) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.85;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+
+            toggleInfoModal(show) {
+                const modal = document.getElementById('info-modal');
+                if (modal) {
+                    if (show) modal.classList.add('show');
+                    else modal.classList.remove('show');
+                }
+            }
+
+            init() {
+                this.renderMissionGrid();
+                this.setupEventListeners();
+                this.showScreen('welcome');
+                this.updateHUD();
+            }
+
+            setupEventListeners() {
+                document.getElementById('btn-start-game').onclick = () => this.showScreen('briefing');
+                document.getElementById('btn-start-briefing').onclick = () => this.showScreen('map');
+            }
+
+            showScreen(screenId) {
+                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(`screen-${screenId}`);
+                if (target) {
+                    target.classList.add('active');
+                    this.currentScreen = screenId;
+                }
+                this.hideFeedback();
+                this.updateNavButtons();
+            }
+
+            updateHUD() {
+                const count = this.completedMissions.filter(Boolean).length;
+                document.getElementById('progress-fill').style.width = `${(count / 5) * 100}%`;
+                document.getElementById('progress-text').innerText = `Thành tựu: ${count} / 5 Nhiệm vụ`;
+
+                for (let i = 1; i <= 5; i++) {
+                    const star = document.getElementById(`star-${i}`);
+                    if (this.completedMissions[i - 1]) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                }
+            }
+
+            renderMissionGrid() {
+                const grid = document.getElementById('mission-grid');
+                grid.innerHTML = '';
+
+                const missionsData = [
+                    { num: 1, title: 'DISCOVER THE WORDS', vi: 'Khám phá thuật ngữ' },
+                    { num: 2, title: 'FIND O AND F', vi: 'Tìm quang tâm O và tiêu điểm F' },
+                    { num: 3, title: 'BUILD THE SCIENCE', vi: 'Hoàn thành câu khoa học' },
+                    { num: 4, title: 'LIGHT RAY CHALLENGE', vi: 'Thử thách đường truyền tia sáng' },
+                    { num: 5, title: 'FINAL MISSION', vi: 'Tìm lỗi sai trong sơ đồ' }
+                ];
+
+                missionsData.forEach((m, idx) => {
+                    const isUnlocked = idx === 0 || this.completedMissions[idx - 1];
+                    const isCompleted = this.completedMissions[idx];
+
+                    const card = document.createElement('div');
+                    card.className = `mission-card ${isCompleted ? 'completed' : isUnlocked ? 'unlocked' : 'locked'}`;
+                    card.onclick = () => {
+                        if (isUnlocked) {
+                            this.startMission(m.num);
+                        } else {
+                            this.showFeedback('Cần hoàn thành nhiệm vụ trước đó để mở khóa!', 'wrong');
+                        }
+                    };
+
+                    card.innerHTML = `
+                        <div class="mission-num">MISSION ${m.num}</div>
+                        <h4>${m.title}</h4>
+                        <p style="font-size:0.8rem; color:var(--text-dim);">${m.vi}</p>
+                        <span class="status-badge ${isCompleted ? 'completed' : isUnlocked ? 'available' : 'locked'}">
+                            ${isCompleted ? '✓ HOÀN THÀNH' : isUnlocked ? 'SẴN SÀNG' : '🔒 ĐÃ KHÓA'}
+                        </span>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+
+            startMission(num) {
+                this.activeMissionNum = num;
+                this.showScreen(`mission-${num}`);
+                this.initMissionState(num);
+                this.updateNavButtons();
+            }
+
+            initMissionState(num) {
+                this.selectedCard = null;
+                if (num === 1) {
+                    this.m1State = { axis: null, centre: null, focus: null, length: null };
+                    this.m1Status = { axis: null, centre: null, focus: null, length: null };
+                    this.m1Words.sort(() => Math.random() - 0.5);
+                    this.renderM1();
+                } else if (num === 2) {
+                    this.m2Step = 1;
+                    this.renderM2();
+                } else if (num === 3) {
+                    this.m3State = { q1: null, q2: null, q3: null, q4: null };
+                    this.m3Status = { q1: null, q2: null, q3: null, q4: null };
+                    this.m3Words.sort(() => Math.random() - 0.5);
+                    this.renderM3();
+                } else if (num === 4) {
+                    this.m4State = { q1: null, q2: null, q3: null };
+                    this.m4Status = { q1: null, q2: null, q3: null };
+                    this.renderM4();
+                } else if (num === 5) {
+                    this.m5State = { errorClicked: false, fixSelected: null };
+                    document.getElementById('m5-faulty-rays').style.display = 'block';
+                    document.getElementById('m5-corrected-rays').style.display = 'none';
+                    this.renderM5();
+                }
+            }
+
+            updateNavButtons() {
+                const btnNext = document.getElementById('btn-next');
+                const btnHint = document.getElementById('btn-hint');
+                const btnCheck = document.getElementById('btn-check');
+                const btnTryAgain = document.getElementById('btn-try-again');
+
+                if (this.currentScreen.startsWith('mission-')) {
+                    const isCurrentCompleted = this.completedMissions[this.activeMissionNum - 1];
+                    btnNext.disabled = !isCurrentCompleted;
+                    btnHint.style.display = 'inline-flex';
+                    btnCheck.style.display = 'inline-flex';
+                    btnTryAgain.style.display = 'inline-flex';
+                } else {
+                    btnHint.style.display = 'none';
+                    btnCheck.style.display = 'none';
+                    btnTryAgain.style.display = 'none';
+                    btnNext.disabled = true;
+                }
+            }
+
+            renderM1() {
+                const container = document.getElementById('word-bank-m1');
+                container.innerHTML = '';
+
+                this.m1Words.forEach(w => {
+                    const isPlaced = Object.values(this.m1State).includes(w.id);
+                    const card = document.createElement('div');
+                    card.className = `word-card ${isPlaced ? 'placed' : ''} ${this.selectedCard === w.id ? 'selected' : ''}`;
+                    card.innerHTML = `<span>${w.text}</span> <span style="font-size:0.8rem; opacity:0.7;">🔊</span>`;
+                    
+                    card.onclick = () => {
+                        this.speakText(w.text);
+                        if (isPlaced) return;
+                        if (this.selectedCard === w.id) {
+                            this.selectedCard = null;
+                        } else {
+                            this.selectedCard = w.id;
+                            sfx.playBeep(600, 'sine', 0.05);
+                        }
+                        this.renderM1();
+                    };
+
+                    container.appendChild(card);
+                });
+
+                ['axis', 'centre', 'focus', 'length'].forEach(slot => {
+                    const slotGroup = document.getElementById(`slot-m1-${slot}`);
+                    const textEl = document.getElementById(`text-m1-${slot}`);
+                    const val = this.m1State[slot];
+                    const status = this.m1Status[slot];
+
+                    slotGroup.classList.remove('wrong', 'correct');
+                    if (status === 'wrong') slotGroup.classList.add('wrong');
+                    else if (status === 'correct') slotGroup.classList.add('correct');
+
+                    if (val) {
+                        const wordObj = this.m1Words.find(w => w.id === val);
+                        textEl.textContent = (wordObj ? wordObj.text : slot) + (status === 'wrong' ? ' ✕' : '');
+                        textEl.setAttribute('fill', status === 'wrong' ? '#ff8888' : status === 'correct' ? '#6ee7b7' : '#00f2ff');
+                        textEl.setAttribute('font-size', '11');
+                    } else {
+                        textEl.textContent = '[ Bấm chọn vị trí ]';
+                        textEl.setAttribute('fill', '#94a3b8');
+                        textEl.setAttribute('font-size', '11');
+                    }
+                });
+            }
+
+            handleSlotClick(slotId) {
+                if (this.selectedCard) {
+                    this.m1State[slotId] = this.selectedCard;
+                    this.m1Status[slotId] = null;
+                    this.selectedCard = null;
+                    sfx.playBeep(700, 'sine', 0.08);
+                    this.renderM1();
+                } else if (this.m1State[slotId]) {
+                    this.m1State[slotId] = null;
+                    this.m1Status[slotId] = null;
+                    sfx.playBeep(400, 'sine', 0.08);
+                    this.renderM1();
+                }
+            }
+
+            checkM1() {
+                const correct = { axis: 'axis', centre: 'centre', focus: 'focus', length: 'length' };
+                let allCorrect = true;
+                let hasEmpty = false;
+
+                ['axis', 'centre', 'focus', 'length'].forEach(slot => {
+                    if (!this.m1State[slot]) {
+                        hasEmpty = true;
+                        this.m1Status[slot] = null;
+                    } else if (this.m1State[slot] === correct[slot]) {
+                        this.m1Status[slot] = 'correct';
+                    } else {
+                        this.m1Status[slot] = 'wrong';
+                        allCorrect = false;
+                    }
+                });
+
+                if (hasEmpty) {
+                    this.showFeedback('Chưa điền đủ vị trí. Em hãy chọn từ điền vào tất cả các ô trước!', 'hint');
+                    this.renderM1();
+                    return;
+                }
+
+                if (allCorrect) {
+                    this.completeMission(1, 'Chính xác! Bạn đã ghép đúng tất cả các thuật ngữ thấu kính!');
+                } else {
+                    sfx.playError();
+                    this.triggerAreaShake('area-m1');
+                    this.showFeedback('Chưa chính xác! Các ô bị đỏ đang sai. Bạn hãy BẤM VÀO Ô ĐỎ để xóa và thử lại!', 'wrong', true);
+                    this.renderM1();
+                }
+            }
+
+            renderM2() {
+                const box = document.getElementById('m2-question-box');
+                
+                const questions = [
+                    { step: 1, title: 'Step 1: Optical Centre O', desc: 'Observe the optical centre O located at the center of the lens. Click this point on the diagram!', target: 'O' },
+                    { step: 2, title: 'Step 2: Principal Focus F', desc: 'Parallel incident rays converge at a point on the principal axis. Click this focal point!', target: 'F' },
+                    { step: 3, title: 'Step 3: Principal Axis', desc: 'Click the straight line passing through optical centre O and perpendicular to the lens!', target: 'axis' },
+                    { step: 4, title: 'Step 4: Focal Length OF', desc: 'Click the distance from optical centre O to principal focus F!', target: 'OF' }
+                ];
+
+                const q = questions[this.m2Step - 1];
+                box.innerHTML = `
+                    <h4 style="color:var(--accent-amber); margin-bottom:6px;">${q.title}</h4>
+                    <p style="font-size:0.9rem; color:#fff;">${q.desc}</p>
+                `;
+
+                for (let i = 1; i <= 4; i++) {
+                    const el = document.getElementById(`m2-s${i}`);
+                    if (i < this.m2Step) {
+                        el.className = 'status-badge completed';
+                    } else if (i === this.m2Step) {
+                        el.className = 'status-badge available';
+                    } else {
+                        el.className = 'status-badge locked';
+                    }
+                }
+            }
+
+            handleM2Click(targetType) {
+                const targets = ['O', 'F', 'axis', 'OF'];
+                const expected = targets[this.m2Step - 1];
+
+                if (targetType === expected) {
+                    sfx.playBeep(800, 'sine', 0.1);
+                    
+                    const speakTerms = {
+                        'O': 'Optical centre',
+                        'F': 'Principal focus',
+                        'axis': 'Principal axis',
+                        'OF': 'Focal length'
+                    };
+                    if (speakTerms[targetType]) {
+                        this.speakText(speakTerms[targetType]);
+                    }
+
+                    if (this.m2Step < 4) {
+                        this.m2Step++;
+                        this.showFeedback(`Chính xác! Đã xác định đúng ${targetType}. Tiếp tục bước tiếp theo!`, 'correct');
+                        this.renderM2();
+                    } else {
+                        this.completeMission(2, 'Great! You identified all key components: O, F, Principal axis and Focal length!');
+                    }
+                } else {
+                    sfx.playError();
+                    this.showFeedback('Chưa đúng rồi! Hãy quan sát kĩ yêu cầu và thử bấm lại vị trí đúng!', 'wrong');
+                }
+            }
+
+            renderM3() {
+                const list = document.getElementById('m3-sentence-list');
+                list.innerHTML = `
+                    <div class="sentence-item">
+                        1. O is the <span class="drop-zone-inline ${this.m3State.q1 ? 'filled' : ''} ${this.m3Status.q1 || ''}" onclick="game.handleM3SlotClick('q1')">
+                            ${this.m3State.q1 || '[ Select word ]'} ${this.m3Status.q1 === 'wrong' ? ' ✕' : ''}
+                        </span> of the lens.
+                    </div>
+                    <div class="sentence-item">
+                        2. The <span class="drop-zone-inline ${this.m3State.q2 ? 'filled' : ''} ${this.m3Status.q2 || ''}" onclick="game.handleM3SlotClick('q2')">
+                            ${this.m3State.q2 || '[ Select word ]'} ${this.m3Status.q2 === 'wrong' ? ' ✕' : ''}
+                        </span> passes through O.
+                    </div>
+                    <div class="sentence-item">
+                        3. F is the <span class="drop-zone-inline ${this.m3State.q3 ? 'filled' : ''} ${this.m3Status.q3 || ''}" onclick="game.handleM3SlotClick('q3')">
+                            ${this.m3State.q3 || '[ Select word ]'} ${this.m3Status.q3 === 'wrong' ? ' ✕' : ''}
+                        </span> of the lens.
+                    </div>
+                    <div class="sentence-item">
+                        4. The distance OF is called the <span class="drop-zone-inline ${this.m3State.q4 ? 'filled' : ''} ${this.m3Status.q4 || ''}" onclick="game.handleM3SlotClick('q4')">
+                            ${this.m3State.q4 || '[ Select word ]'} ${this.m3Status.q4 === 'wrong' ? ' ✕' : ''}
+                        </span>.
+                    </div>
+                `;
+
+                const bank = document.getElementById('word-bank-m3');
+                bank.innerHTML = '';
+                this.m3Words.forEach(w => {
+                    const isUsed = Object.values(this.m3State).includes(w.id);
+                    const card = document.createElement('div');
+                    card.className = `word-card ${isUsed ? 'placed' : ''} ${this.selectedCard === w.id ? 'selected' : ''}`;
+                    card.innerHTML = `<span>${w.text}</span> <span style="font-size:0.8rem; opacity:0.7;">🔊</span>`;
+                    card.onclick = () => {
+                        this.speakText(w.text);
+                        if (isUsed) return;
+                        if (this.selectedCard === w.id) {
+                            this.selectedCard = null;
+                        } else {
+                            this.selectedCard = w.id;
+                            sfx.playBeep(600, 'sine', 0.05);
+                        }
+                        this.renderM3();
+                    };
+                    bank.appendChild(card);
+                });
+            }
+
+            handleM3SlotClick(key) {
+                if (this.selectedCard) {
+                    this.m3State[key] = this.selectedCard;
+                    this.m3Status[key] = null;
+                    this.selectedCard = null;
+                    sfx.playBeep(700, 'sine', 0.08);
+                    this.renderM3();
+                } else if (this.m3State[key]) {
+                    this.m3State[key] = null;
+                    this.m3Status[key] = null;
+                    sfx.playBeep(400, 'sine', 0.08);
+                    this.renderM3();
+                }
+            }
+
+            checkM3() {
+                const correct = { q1: 'optical centre', q2: 'principal axis', q3: 'principal focus', q4: 'focal length' };
+                let allCorrect = true;
+                let hasEmpty = false;
+
+                ['q1', 'q2', 'q3', 'q4'].forEach(key => {
+                    if (!this.m3State[key]) {
+                        hasEmpty = true;
+                        this.m3Status[key] = null;
+                    } else if (this.m3State[key] === correct[key]) {
+                        this.m3Status[key] = 'correct';
+                    } else {
+                        this.m3Status[key] = 'wrong';
+                        allCorrect = false;
+                    }
+                });
+
+                if (hasEmpty) {
+                    this.showFeedback('Chưa điền đủ 4 câu. Hãy chọn từ điền đầy đủ trước khi kiểm tra!', 'hint');
+                    this.renderM3();
+                    return;
+                }
+
+                if (allCorrect) {
+                    this.completeMission(3, 'Excellent! Bạn đã hoàn thành chính xác 4 câu mô tả khoa học!');
+                } else {
+                    sfx.playError();
+                    this.triggerAreaShake('area-m3');
+                    this.showFeedback('Chưa đúng! Các ô viền đỏ đang sai. Bấm trực tiếp vào ô đỏ để xóa từ và làm lại!', 'wrong', true);
+                    this.renderM3();
+                }
+            }
+
+            renderM4() {
+                const box = document.getElementById('m4-questions');
+                box.innerHTML = `
+                    <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px;">
+                        <p style="font-size:0.85rem; color:var(--accent-cyan); font-weight:bold; margin-bottom:6px;">
+                            1. For a CONVERGING lens, parallel rays...
+                        </p>
+                        <select id="m4-select-1" class="${this.m4Status.q1 === 'wrong' ? 'select-wrong' : ''}" onchange="game.m4Status.q1=null; this.classList.remove('select-wrong');" style="width:100%; padding:8px; border-radius:6px; background:#1e2d4a; color:#fff; border:1px solid var(--accent-cyan);">
+                            <option value="" ${!this.m4State.q1 ? 'selected' : ''}>-- Choose option --</option>
+                            <option value="meet" ${this.m4State.q1 === 'meet' ? 'selected' : ''}>meet at the principal focus F</option>
+                            <option value="spread" ${this.m4State.q1 === 'spread' ? 'selected' : ''}>spread out away from F</option>
+                        </select>
+                    </div>
+
+                    <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px;">
+                        <p style="font-size:0.85rem; color:var(--accent-orange); font-weight:bold; margin-bottom:6px;">
+                            2. For a DIVERGING lens, the rays...
+                        </p>
+                        <select id="m4-select-2" class="${this.m4Status.q2 === 'wrong' ? 'select-wrong' : ''}" onchange="game.m4Status.q2=null; this.classList.remove('select-wrong');" style="width:100%; padding:8px; border-radius:6px; background:#1e2d4a; color:#fff; border:1px solid var(--accent-orange);">
+                            <option value="" ${!this.m4State.q2 ? 'selected' : ''}>-- Choose option --</option>
+                            <option value="spread" ${this.m4State.q2 === 'spread' ? 'selected' : ''}>spread out after passing through the lens</option>
+                            <option value="meet" ${this.m4State.q2 === 'meet' ? 'selected' : ''}>meet at F directly</option>
+                        </select>
+                    </div>
+
+                    <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:10px;">
+                        <p style="font-size:0.85rem; color:var(--accent-amber); font-weight:bold; margin-bottom:6px;">
+                            3. Their backward extensions (đường kéo dài)...
+                        </p>
+                        <select id="m4-select-3" class="${this.m4Status.q3 === 'wrong' ? 'select-wrong' : ''}" onchange="game.m4Status.q3=null; this.classList.remove('select-wrong');" style="width:100%; padding:8px; border-radius:6px; background:#1e2d4a; color:#fff; border:1px solid var(--accent-amber);">
+                            <option value="" ${!this.m4State.q3 ? 'selected' : ''}>-- Choose option --</option>
+                            <option value="meet_f" ${this.m4State.q3 === 'meet_f' ? 'selected' : ''}>meet at focus F (nét đứt)</option>
+                            <option value="never" ${this.m4State.q3 === 'never' ? 'selected' : ''}>never meet anywhere</option>
+                        </select>
+                    </div>
+                `;
+            }
+
+            checkM4() {
+                const s1 = document.getElementById('m4-select-1').value;
+                const s2 = document.getElementById('m4-select-2').value;
+                const s3 = document.getElementById('m4-select-3').value;
+
+                this.m4State = { q1: s1, q2: s2, q3: s3 };
+
+                if (!s1 || !s2 || !s3) {
+                    this.showFeedback('Chưa chọn hết các câu. Hãy chọn đầy đủ trước khi kiểm tra!', 'hint');
+                    return;
+                }
+
+                this.m4Status.q1 = (s1 === 'meet') ? 'correct' : 'wrong';
+                this.m4Status.q2 = (s2 === 'spread') ? 'correct' : 'wrong';
+                this.m4Status.q3 = (s3 === 'meet_f') ? 'correct' : 'wrong';
+
+                if (s1 === 'meet' && s2 === 'spread' && s3 === 'meet_f') {
+                    this.completeMission(4, 'Great job! Bạn đã phân biệt chính xác đặc điểm đường truyền tia sáng qua 2 loại thấu kính!');
+                } else {
+                    sfx.playError();
+                    this.triggerAreaShake('area-m4');
+                    this.renderM4();
+                    this.showFeedback('Chưa chính xác! Vui lòng chọn lại các câu bị đỏ và kiểm tra lại.', 'wrong', true);
+                }
+            }
+
+            renderM5() {
+                const box = document.getElementById('m5-interaction-box');
+                if (!this.m5State.errorClicked) {
+                    box.innerHTML = `
+                        <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--accent-red); padding: 16px; border-radius: 12px;">
+                            <h4 style="color: var(--accent-red); margin-bottom: 8px;">STEP 1: SPOT THE ERROR</h4>
+                            <p style="font-size: 0.9rem;">Sơ đồ thấu kính phân kì đang có đường truyền tia sáng bị sai khoa học!</p>
+                            <p style="font-size: 0.85rem; color: var(--accent-amber); margin-top: 8px; font-weight: bold;">
+                                👉 Bấm trực tiếp vào vị trí các tia ló sai trên hình vẽ để phát hiện lỗi!
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    box.innerHTML = `
+                        <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--accent-green); padding: 14px; border-radius: 12px;">
+                            <h4 style="color: var(--accent-green); margin-bottom: 4px;">✓ ERROR DETECTED!</h4>
+                            <p style="font-size: 0.85rem; color: #fff;">Đã phát hiện lỗi: Các tia ló không thể hội tụ trực tiếp ở thấu kính phân kì!</p>
+                        </div>
+
+                        <div style="background: rgba(0, 0, 0, 0.3); border: 1px solid var(--accent-cyan); padding: 14px; border-radius: 12px;">
+                            <h4 style="color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 8px;">STEP 2: CHOOSE THE SCIENTIFIC FIX</h4>
+                            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
+                                <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
+                                    <input type="radio" name="m5fix" value="A" ${this.m5State.fixSelected === 'A' ? 'checked' : ''} onchange="game.m5State.fixSelected='A'">
+                                    <span>Tia ló phải <strong>phân kì</strong>, đường kéo dài (nét đứt) đi qua tiêu điểm F' ở phía trước thấu kính.</span>
+                                </label>
+                                <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
+                                    <input type="radio" name="m5fix" value="B" ${this.m5State.fixSelected === 'B' ? 'checked' : ''} onchange="game.m5State.fixSelected='B'">
+                                    <span>Tia ló đi thẳng song song với trục chính không bị đổi hướng.</span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            handleM5ClickError() {
+                if (!this.m5State.errorClicked) {
+                    this.m5State.errorClicked = true;
+                    sfx.playBeep(700, 'sine', 0.1);
+                    this.showFeedback('Đã phát hiện vị trí bị sai! Hãy chọn phương án khắc phục đúng ở bảng bên phải.', 'correct');
+                    this.renderM5();
+                }
+            }
+
+            checkM5() {
+                if (!this.m5State.errorClicked) {
+                    this.showFeedback('Hãy bấm vào vùng tia sáng bị sai trên sơ đồ trước!', 'hint');
+                    return;
+                }
+
+                if (!this.m5State.fixSelected) {
+                    this.showFeedback('Vui lòng chọn 1 phương án khắc phục!', 'hint');
+                    return;
+                }
+
+                if (this.m5State.fixSelected === 'A') {
+                    document.getElementById('m5-faulty-rays').style.display = 'none';
+                    document.getElementById('m5-corrected-rays').style.display = 'block';
+                    this.completeMission(5, 'XUẤT SẮC! Bạn đã sửa lại chính xác đường truyền tia sáng qua thấu kính phân kì!');
+                } else {
+                    sfx.playError();
+                    this.showFeedback('Chưa đúng! Thấu kính phân kì làm chùm tia sáng phân kì ra, đường kéo dài mới qua tiêu điểm F\'.', 'wrong');
+                }
+            }
+
+            completeMission(num, message) {
+                this.completedMissions[num - 1] = true;
+                sfx.playStar();
+                this.updateHUD();
+                this.renderMissionGrid();
+                this.updateNavButtons();
+                this.showFeedback(message, 'correct');
+
+                if (num === 5) {
+                    setTimeout(() => this.showScreen('summary'), 2200);
+                }
+            }
+
+            checkCurrentMission() {
+                switch(this.activeMissionNum) {
+                    case 1: this.checkM1(); break;
+                    case 2: this.checkM2(); break;
+                    case 3: this.checkM3(); break;
+                    case 4: this.checkM4(); break;
+                    case 5: this.checkM5(); break;
+                }
+            }
+
+            resetCurrentMission() {
+                this.initMissionState(this.activeMissionNum);
+                this.hideFeedback();
+            }
+
+            clearWrongAndRetry() {
+                this.hideFeedback();
+                if (this.activeMissionNum === 1) {
+                    ['axis', 'centre', 'focus', 'length'].forEach(s => {
+                        if (this.m1Status[s] === 'wrong') {
+                            this.m1State[s] = null;
+                            this.m1Status[s] = null;
+                        }
+                    });
+                    this.renderM1();
+                } else if (this.activeMissionNum === 3) {
+                    ['q1', 'q2', 'q3', 'q4'].forEach(k => {
+                        if (this.m3Status[k] === 'wrong') {
+                            this.m3State[k] = null;
+                            this.m3Status[k] = null;
+                        }
+                    });
+                    this.renderM3();
+                } else if (this.activeMissionNum === 4) {
+                    if (this.m4Status.q1 === 'wrong') this.m4State.q1 = '';
+                    if (this.m4Status.q2 === 'wrong') this.m4State.q2 = '';
+                    if (this.m4Status.q3 === 'wrong') this.m4State.q3 = '';
+                    this.renderM4();
+                }
+            }
+
+            showFeedback(msg, type = 'correct', showRetry = false) {
+                const banner = document.getElementById('feedback-banner');
+                const icon = document.getElementById('feedback-icon');
+                const text = document.getElementById('feedback-text');
+                const retryBtn = document.getElementById('btn-banner-retry');
+
+                banner.className = `feedback-banner show ${type}`;
+                icon.textContent = type === 'correct' ? '✓' : type === 'wrong' ? '✕' : '💡';
+                text.textContent = msg;
+
+                if (showRetry) {
+                    retryBtn.style.display = 'inline-block';
+                } else {
+                    retryBtn.style.display = 'none';
+                }
+
+                if (type === 'correct') {
+                    setTimeout(() => this.hideFeedback(), 3000);
+                }
+            }
+
+            hideFeedback() {
+                const banner = document.getElementById('feedback-banner');
+                if (banner) banner.classList.remove('show');
+            }
+
+            triggerAreaShake(areaId) {
+                const el = document.getElementById(areaId);
+                if (el) {
+                    el.classList.remove('shake');
+                    void el.offsetWidth;
+                    el.classList.add('shake');
+                }
+            }
+
+            showHint() {
+                const hints = [
+                    'Gợi ý M1: Principal axis là đường trục nằm ngang; Optical centre O là tâm; Principal focus F là tiêu điểm; Focal length f là khoảng cách OF.',
+                    'Gợi ý M2: Hãy đọc kĩ câu hỏi bên phải và bấm trực tiếp vào đúng vị trí tương ứng trên hình vẽ!',
+                    'Gợi ý M3: O là optical centre; đường qua O là principal axis; F là principal focus; khoảng cách OF là focal length.',
+                    'Gợi ý M4: Thấu kính hội tụ làm chùm tia gặp nhau tại F (meet). Thấu kính phân kì làm chùm tia xòe ra (spread), đường kéo dài gặp nhau ở F.',
+                    'Gợi ý M5: Bấm vào chùm tia sáng sai ở hình vẽ bên trái, sau đó chọn phương án đúng cho thấu kính phân kì.'
+                ];
+                this.showFeedback(hints[this.activeMissionNum - 1], 'hint');
+            }
+
+            handleBackNav() {
+                if (this.currentScreen === 'welcome') return;
+                if (this.currentScreen === 'briefing') this.showScreen('welcome');
+                else if (this.currentScreen === 'map') this.showScreen('briefing');
+                else if (this.currentScreen.startsWith('mission-')) this.showScreen('map');
+                else if (this.currentScreen === 'summary') this.showScreen('map');
+            }
+
+            handleNextNav() {
+                if (this.activeMissionNum < 5) {
+                    this.startMission(this.activeMissionNum + 1);
+                } else {
+                    this.showScreen('summary');
+                }
+            }
+
+            resetAllProgress() {
+                this.completedMissions = [false, false, false, false, false];
+                this.updateHUD();
+                this.renderMissionGrid();
+                this.showScreen('welcome');
+            }
+        }
+
+        let game;
+        window.onload = function() {
+            game = new LensExplorerGame();
+            game.init();
+        };
+    </script>
+</body>
+</html>
