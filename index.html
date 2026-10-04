@@ -1,426 +1,435 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Kho học liệu số - Toán và Khoa học tự nhiên THCS</title>
-
-<style>
-
-/* ==============================
-   THIẾT LẬP CHUNG
-============================== */
-
-* {
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f7fb;
-    color: #243447;
-}
-
-
-/* ==============================
-   PHẦN ĐẦU TRANG
-============================== */
-
-header {
-    background: linear-gradient(135deg, #0b4f9c, #1677c8);
-    color: white;
-    text-align: center;
-    padding: 48px 20px;
-}
-
-header h1 {
-    margin: 0 0 10px;
-    font-size: 34px;
-    letter-spacing: 0.5px;
-}
-
-header h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 500;
-}
-
-header p {
-    margin: 14px 0 0;
-    font-size: 17px;
-    opacity: 0.95;
-}
-
-
-/* ==============================
-   KHUNG NỘI DUNG
-============================== */
-
-.container {
-    max-width: 1150px;
-    margin: 38px auto;
-    padding: 0 20px;
-}
-
-.intro {
-    text-align: center;
-    margin-bottom: 32px;
-}
-
-.intro h2 {
-    color: #0b4f9c;
-    font-size: 28px;
-    margin-bottom: 10px;
-}
-
-.intro p {
-    font-size: 17px;
-    line-height: 1.6;
-    margin: 0 auto;
-    max-width: 780px;
-    color: #4a5568;
-}
-
-
-/* ==============================
-   KHU VỰC CÁC HỌC LIỆU
-============================== */
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 25px;
-}
-
-.card {
-    background: white;
-    border-radius: 16px;
-    padding: 28px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    border-top: 5px solid #1677c8;
-    transition: transform 0.25s, box-shadow 0.25s;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kho học liệu số - Toán và Khoa học tự nhiên THCS</title>
+
+    <style>
+
+        /* ==============================
+           THIẾT LẬP CHUNG
+        ============================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #243447;
+        }
+
+
+        /* ==============================
+           ĐẦU TRANG
+        ============================== */
+
+        header {
+            background: linear-gradient(135deg, #0b4f9c, #1677c8);
+            color: white;
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        header h1 {
+            margin: 0 0 10px;
+            font-size: 34px;
+            letter-spacing: 0.5px;
+        }
+
+        header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        header p {
+            margin: 14px 0 0;
+            font-size: 17px;
+            opacity: 0.95;
+        }
+
+
+        /* ==============================
+           KHUNG NỘI DUNG
+        ============================== */
+
+        .container {
+            max-width: 1150px;
+            margin: 38px auto;
+            padding: 0 20px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .intro h2 {
+            color: #0b4f9c;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .intro p {
+            font-size: 17px;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 800px;
+            color: #4a5568;
+        }
+
+
+        /* ==============================
+           DANH SÁCH HỌC LIỆU
+        ============================== */
 
-    display: flex;
-    flex-direction: column;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 25px;
+            align-items: stretch;
+        }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 9px 24px rgba(0,0,0,0.13);
-}
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border-top: 5px solid #1677c8;
 
-.icon {
-    font-size: 44px;
-    margin-bottom: 14px;
-}
+            display: flex;
+            flex-direction: column;
 
-.tag {
-    display: inline-block;
-    align-self: flex-start;
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
 
-    background: #e9f3ff;
-    color: #0b4f9c;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 9px 24px rgba(0, 0, 0, 0.13);
+        }
 
-    padding: 6px 12px;
-    border-radius: 18px;
+        .icon {
+            font-size: 44px;
+            margin-bottom: 14px;
+        }
 
-    font-size: 13px;
-    margin-bottom: 13px;
-}
+        .tag {
+            display: inline-block;
+            align-self: flex-start;
 
-.card h3 {
-    color: #0b4f9c;
-    margin: 4px 0 12px;
-    font-size: 23px;
-}
+            background: #e9f3ff;
+            color: #0b4f9c;
 
-.card p {
-    line-height: 1.7;
-    font-size: 16px;
-    margin: 0 0 18px;
-    flex-grow: 1;
-}
+            padding: 6px 12px;
+            border-radius: 18px;
 
-.btn {
-    display: inline-block;
-    align-self: flex-start;
+            font-size: 13px;
+            font-weight: bold;
 
-    padding: 12px 22px;
+            margin-bottom: 13px;
+        }
 
-    background: #0b66c3;
-    color: white;
+        .card h3 {
+            color: #0b4f9c;
+            margin: 4px 0 12px;
+            font-size: 23px;
+        }
 
-    text-decoration: none;
-    border-radius: 8px;
+        .card p {
+            line-height: 1.7;
+            font-size: 16px;
+            margin: 0 0 18px;
 
-    font-weight: bold;
+            flex-grow: 1;
+        }
 
-    transition: background 0.2s, transform 0.2s;
-}
+        .btn {
+            display: inline-block;
+            align-self: flex-start;
 
-.btn:hover {
-    background: #084f99;
-    transform: translateY(-1px);
-}
+            padding: 12px 22px;
 
+            background: #0b66c3;
+            color: white;
 
-/* ==============================
-   PHẦN THÔNG TIN
-============================== */
+            text-decoration: none;
+            border-radius: 8px;
 
-.note {
-    max-width: 850px;
-    margin: 38px auto 0;
+            font-weight: bold;
 
-    background: white;
+            transition: background 0.2s, transform 0.2s;
+        }
 
-    border-radius: 12px;
-    padding: 20px 24px;
+        .btn:hover {
+            background: #084f99;
+            transform: translateY(-1px);
+        }
 
-    border-left: 5px solid #1677c8;
 
-    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
-}
+        /* ==============================
+           THÔNG TIN KHO HỌC LIỆU
+        ============================== */
 
-.note p {
-    margin: 6px 0;
-    line-height: 1.65;
-}
+        .note {
+            max-width: 900px;
+            margin: 38px auto 0;
 
-.note strong {
-    color: #0b4f9c;
-}
+            background: white;
 
+            border-radius: 12px;
+            padding: 22px 25px;
 
-/* ==============================
-   CHÂN TRANG
-============================== */
+            border-left: 5px solid #1677c8;
 
-footer {
-    margin-top: 48px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        }
 
-    background: #e8eef5;
+        .note p {
+            margin: 6px 0;
+            line-height: 1.7;
+        }
 
-    text-align: center;
+        .note strong {
+            color: #0b4f9c;
+        }
 
-    padding: 25px 15px;
 
-    line-height: 1.8;
+        /* ==============================
+           CHÂN TRANG
+        ============================== */
 
-    font-size: 14px;
-    color: #52606d;
-}
+        footer {
+            margin-top: 48px;
 
-footer strong {
-    color: #0b4f9c;
-}
+            background: #e8eef5;
 
+            text-align: center;
 
-/* ==============================
-   HIỂN THỊ TRÊN ĐIỆN THOẠI
-============================== */
+            padding: 25px 15px;
 
-@media (max-width: 700px) {
+            line-height: 1.8;
 
-    header {
-        padding: 36px 15px;
-    }
+            font-size: 14px;
+            color: #52606d;
+        }
 
-    header h1 {
-        font-size: 27px;
-    }
+        footer strong {
+            color: #0b4f9c;
+        }
 
-    header h2 {
-        font-size: 18px;
-        line-height: 1.5;
-    }
 
-    header p {
-        font-size: 15px;
-    }
+        /* ==============================
+           ĐIỆN THOẠI / MÀN HÌNH NHỎ
+        ============================== */
 
-    .container {
-        margin: 28px auto;
-        padding: 0 15px;
-    }
+        @media (max-width: 700px) {
 
-    .intro h2 {
-        font-size: 24px;
-    }
+            header {
+                padding: 36px 15px;
+            }
 
-    .grid {
-        grid-template-columns: 1fr;
-    }
+            header h1 {
+                font-size: 27px;
+            }
 
-    .card {
-        padding: 23px;
-    }
-}
+            header h2 {
+                font-size: 18px;
+                line-height: 1.5;
+            }
 
-</style>
+            header p {
+                font-size: 15px;
+            }
+
+            .container {
+                margin: 28px auto;
+                padding: 0 15px;
+            }
+
+            .intro h2 {
+                font-size: 24px;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 23px;
+            }
+        }
+
+    </style>
 </head>
 
 
 <body>
 
 
-<!-- ==============================
-     ĐẦU TRANG
-============================== -->
+    <!-- ==============================
+         ĐẦU TRANG
+    ============================== -->
 
-<header>
+    <header>
 
-    <h1>KHO HỌC LIỆU SỐ</h1>
+        <h1>KHO HỌC LIỆU SỐ</h1>
 
-    <h2>TOÁN – KHOA HỌC TỰ NHIÊN THCS</h2>
-
-    <p>
-        Học liệu hỗ trợ dạy học, luyện tập và tự học
-    </p>
-
-</header>
-
-
-<!-- ==============================
-     NỘI DUNG CHÍNH
-============================== -->
-
-<main class="container">
-
-
-    <!-- GIỚI THIỆU -->
-
-    <section class="intro">
-
-        <h2>Học liệu tương tác</h2>
+        <h2>TOÁN – KHOA HỌC TỰ NHIÊN THCS</h2>
 
         <p>
-            Các học liệu được thiết kế nhằm hỗ trợ hoạt động dạy học,
-            luyện tập, củng cố kiến thức và phát triển khả năng tự học
-            của học sinh.
+            Học liệu hỗ trợ dạy học, luyện tập và tự học
         </p>
 
-    </section>
+    </header>
 
 
-    <!-- ==========================
-         DANH SÁCH HỌC LIỆU
-    =========================== -->
+    <!-- ==============================
+         NỘI DUNG CHÍNH
+    ============================== -->
 
-    <section class="grid">
+    <main class="container">
 
 
-        <!-- ======================
-             HỌC LIỆU 1
-             CHUYẾN XE ĐẠI SỐ 9
-        ======================= -->
+        <!-- GIỚI THIỆU -->
 
-        <article class="card">
+        <section class="intro">
 
-            <div class="icon">🚍</div>
-
-            <span class="tag">
-                TOÁN 9 • HỌC LIỆU TƯƠNG TÁC
-            </span>
-
-            <h3>Chuyến xe Đại số 9</h3>
+            <h2>Học liệu tương tác</h2>
 
             <p>
-                Học liệu tương tác hỗ trợ học sinh ôn tập,
-                luyện tập và củng cố kiến thức Đại số lớp 9
-                thông qua các nhiệm vụ học tập trực quan.
+                Các học liệu được thiết kế nhằm hỗ trợ tổ chức hoạt động học,
+                hình thành kiến thức, luyện tập, củng cố và vận dụng;
+                góp phần phát triển năng lực và khả năng tự học của học sinh.
             </p>
 
-            <a class="btn" href="Chuyenxe.html">
-                Mở học liệu →
-            </a>
-
-        </article>
+        </section>
 
 
-        <!-- ======================
-             HỌC LIỆU 2
-             PHÒNG THÍ NGHIỆM HỢP KIM
-        ======================= -->
+        <!-- ==========================
+             DANH SÁCH HỌC LIỆU
+        =========================== -->
 
-        <article class="card">
+        <section class="grid">
 
-            <div class="icon">🧪</div>
 
-            <span class="tag">
-                KHTN 9 • HỌC LIỆU TƯƠNG TÁC
-            </span>
+            <!-- ==================================
+                 HỌC LIỆU 1
+                 CHUYẾN XE ĐẠI SỐ 9
+            =================================== -->
 
-            <h3>Phòng thí nghiệm hợp kim</h3>
+            <article class="card">
+
+                <div class="icon">🚍</div>
+
+                <span class="tag">
+                    TOÁN 9 • HỌC LIỆU TƯƠNG TÁC
+                </span>
+
+                <h3>Chuyến xe Đại số 9</h3>
+
+                <p>
+                    Học liệu tương tác hỗ trợ học sinh ôn tập,
+                    luyện tập và củng cố kiến thức Đại số lớp 9
+                    thông qua các nhiệm vụ học tập trực quan.
+                </p>
+
+                <a class="btn" href="Chuyenxe.html">
+                    Mở học liệu →
+                </a>
+
+            </article>
+
+
+            <!-- ==================================
+                 HỌC LIỆU 2
+                 PHÒNG THÍ NGHIỆM HỢP KIM
+            =================================== -->
+
+            <article class="card">
+
+                <div class="icon">🧪</div>
+
+                <span class="tag">
+                    TOÁN 9 • HÌNH THÀNH KIẾN THỨC
+                </span>
+
+                <h3>Phòng thí nghiệm hợp kim</h3>
+
+                <p>
+                    Học liệu tương tác hỗ trợ học sinh hình thành
+                    quy trình giải bài toán bằng cách lập hệ phương trình.
+                    Qua các thử thách, học sinh phân tích dữ kiện,
+                    chọn ẩn, lập hệ, giải hệ, kiểm tra nghiệm
+                    và trả lời bài toán.
+                </p>
+
+                <a class="btn" href="Phongthinghiemhopkim.html">
+                    Mở học liệu →
+                </a>
+
+            </article>
+
+
+        </section>
+
+
+        <!-- ==========================
+             THÔNG TIN SỬ DỤNG
+        =========================== -->
+
+        <section class="note">
 
             <p>
-                Học liệu tương tác hỗ trợ học sinh khám phá,
-                tìm hiểu và củng cố kiến thức về hợp kim
-                thông qua các nhiệm vụ học tập trực quan.
+                <strong>Phạm vi sử dụng:</strong>
+                Hỗ trợ tổ chức hoạt động dạy học, hình thành kiến thức,
+                luyện tập, củng cố, vận dụng và tự học.
             </p>
 
-            <a class="btn" href="Phongthinghiemhopkim.html">
-                Mở học liệu →
-            </a>
+            <p>
+                Kho học liệu được tiếp tục cập nhật và bổ sung
+                các sản phẩm phù hợp với quá trình dạy học.
+            </p>
 
-        </article>
-
-
-    </section>
+        </section>
 
 
-    <!-- ==========================
-         THÔNG TIN SỬ DỤNG
-    =========================== -->
-
-    <section class="note">
-
-        <p>
-            <strong>Phạm vi sử dụng:</strong>
-            Phục vụ hoạt động dạy học, luyện tập,
-            ôn tập và tự học.
-        </p>
-
-        <p>
-            Kho học liệu sẽ tiếp tục được cập nhật và bổ sung
-            các sản phẩm phù hợp với quá trình dạy học.
-        </p>
-
-    </section>
+    </main>
 
 
-</main>
+    <!-- ==============================
+         CHÂN TRANG
+    ============================== -->
 
+    <footer>
 
-<!-- ==============================
-     CHÂN TRANG
-============================== -->
+        <strong>KHO HỌC LIỆU SỐ CÁ NHÂN</strong>
 
-<footer>
+        <br>
 
-    <strong>KHO HỌC LIỆU SỐ CÁ NHÂN</strong>
+        Thiết kế và biên soạn:
+        <strong>Bùi Thị Nghĩa</strong>
 
-    <br>
+        <br>
 
-    Thiết kế và biên soạn:
-    <strong>Bùi Thị Nghĩa</strong>
+        Phục vụ dạy học và chia sẻ học liệu giáo dục
 
-    <br>
+        <br>
 
-    Phục vụ dạy học và chia sẻ học liệu giáo dục
+        Năm học 2026 – 2027
 
-    <br>
-
-    Năm học 2026 – 2027
-
-</footer>
+    </footer>
 
 
 </body>
+
 </html>
