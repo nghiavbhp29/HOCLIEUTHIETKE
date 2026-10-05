@@ -8,6 +8,11 @@
     <title>Kho học liệu số - Toán và Khoa học tự nhiên THCS</title>
 
     <style>
+
+        /* =====================================================
+           THIẾT LẬP CHUNG
+        ===================================================== */
+
         * {
             box-sizing: border-box;
         }
@@ -18,50 +23,61 @@
 
         body {
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
-            color: #243447;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f5f8fc;
+            color: #2f4054;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* ==============================
+
+        /* =====================================================
            ĐẦU TRANG
-        ============================== */
+        ===================================================== */
 
         header {
-            background: linear-gradient(135deg, #083f7d, #0b66c3, #168bd1);
+            background: linear-gradient(135deg, #084985, #0b66b8, #1688c7);
             color: white;
             text-align: center;
-            padding: 52px 20px;
-            box-shadow: 0 4px 16px rgba(0, 70, 140, 0.18);
+            padding: 52px 20px 50px;
+            box-shadow: 0 4px 16px rgba(25, 75, 120, 0.12);
         }
 
         header h1 {
-            margin: 0 0 10px;
-            font-size: 36px;
-            letter-spacing: 1px;
+            margin: 0 0 11px;
+            font-size: 35px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
         }
 
         header h2 {
             margin: 0;
-            font-size: 22px;
+            font-size: 21px;
             font-weight: 500;
+            letter-spacing: 0.2px;
         }
 
         header p {
             margin: 15px 0 0;
-            font-size: 17px;
-            opacity: 0.95;
+            font-size: 16px;
+            font-weight: 400;
+            opacity: 0.94;
         }
 
-        /* ==============================
+
+        /* =====================================================
            KHUNG NỘI DUNG
-        ============================== */
+        ===================================================== */
 
         .container {
             max-width: 1180px;
-            margin: 38px auto;
+            margin: 40px auto;
             padding: 0 20px;
         }
+
+
+        /* =====================================================
+           PHẦN GIỚI THIỆU
+        ===================================================== */
 
         .intro {
             text-align: center;
@@ -69,41 +85,53 @@
         }
 
         .intro h2 {
-            color: #0b4f9c;
-            font-size: 29px;
-            margin-bottom: 10px;
+            margin: 0 0 11px;
+            color: #0a579d;
+            font-size: 27px;
+            font-weight: 700;
         }
 
         .intro p {
-            font-size: 17px;
-            line-height: 1.7;
-            margin: 0 auto;
             max-width: 850px;
-            color: #4a5568;
+            margin: 0 auto;
+
+            color: #526579;
+            font-size: 16px;
+            line-height: 1.7;
+            font-weight: 400;
         }
 
-        /* ==============================
-           DANH SÁCH HỌC LIỆU
-        ============================== */
+
+        /* =====================================================
+           LƯỚI HỌC LIỆU
+        ===================================================== */
 
         .grid {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 25px;
+            gap: 26px;
             align-items: stretch;
         }
 
+
+        /* =====================================================
+           THẺ HỌC LIỆU
+        ===================================================== */
+
         .card {
-            background: white;
+            position: relative;
+            overflow: hidden;
+
+            background: #ffffff;
+            border: 1px solid #e7edf4;
             border-radius: 18px;
-            padding: 27px;
-            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+
+            padding: 28px;
 
             display: flex;
             flex-direction: column;
 
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 7px 24px rgba(38, 65, 90, 0.08);
 
             transition:
                 transform 0.25s ease,
@@ -111,11 +139,9 @@
         }
 
         .card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.13);
+            transform: translateY(-5px);
+            box-shadow: 0 13px 30px rgba(38, 65, 90, 0.13);
         }
-
-        /* THANH MÀU TRÊN THẺ */
 
         .card::before {
             content: "";
@@ -123,38 +149,42 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
+            height: 5px;
         }
 
         .card-blue::before {
-            background: linear-gradient(90deg, #0b66c3, #38a3ff);
+            background: linear-gradient(90deg, #0b67bd, #3a9be8);
         }
 
         .card-orange::before {
-            background: linear-gradient(90deg, #e67e22, #f5b041);
+            background: linear-gradient(90deg, #d97716, #efa13d);
         }
 
         .card-green::before {
-            background: linear-gradient(90deg, #00897b, #26a69a);
+            background: linear-gradient(90deg, #087e74, #2aa89d);
         }
 
-        /* BIỂU TƯỢNG */
+
+        /* =====================================================
+           BIỂU TƯỢNG
+        ===================================================== */
 
         .icon-box {
-            width: 62px;
-            height: 62px;
-            border-radius: 16px;
+            width: 58px;
+            height: 58px;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            font-size: 37px;
-            margin: 7px 0 17px;
+            border-radius: 15px;
+            margin: 5px 0 18px;
+
+            font-size: 34px;
         }
 
         .icon-blue {
-            background: #e9f4ff;
+            background: #eaf4fd;
         }
 
         .icon-orange {
@@ -162,216 +192,286 @@
         }
 
         .icon-green {
-            background: #e5f7f3;
+            background: #e7f6f3;
         }
 
-        /* NHÃN */
+
+        /* =====================================================
+           NHÃN PHÂN LOẠI
+        ===================================================== */
 
         .tag {
-            display: inline-block;
+            display: inline-flex;
             align-self: flex-start;
+            align-items: center;
 
-            padding: 7px 12px;
-            border-radius: 18px;
+            padding: 7px 13px;
+            margin-bottom: 17px;
 
-            font-size: 12.5px;
-            font-weight: bold;
-            margin-bottom: 14px;
+            border-radius: 20px;
+
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.3;
+
+            letter-spacing: 0.05px;
         }
 
         .tag-blue {
-            background: #e7f2ff;
-            color: #0758a8;
+            background: #eaf3fc;
+            color: #0a579d;
         }
 
         .tag-orange {
-            background: #fff0dc;
-            color: #b85d0b;
+            background: #fff1df;
+            color: #a9560e;
         }
 
         .tag-green {
-            background: #e1f5f1;
-            color: #08776c;
+            background: #e5f5f2;
+            color: #08766d;
         }
 
-        /* TIÊU ĐỀ */
+
+        /* =====================================================
+           TÊN HỌC LIỆU
+        ===================================================== */
 
         .card h3 {
-            margin: 2px 0 12px;
-            font-size: 22px;
-            line-height: 1.35;
+            margin: 0 0 13px;
+
+            font-size: 21px;
+            line-height: 1.38;
+            font-weight: 700;
         }
 
         .card-blue h3 {
-            color: #0758a8;
+            color: #0759a5;
         }
 
         .card-orange h3 {
-            color: #b85d0b;
+            color: #a9540b;
         }
 
         .card-green h3 {
-            color: #08776c;
+            color: #08766d;
         }
 
-        /* MÔ TẢ */
+
+        /* =====================================================
+           MÔ TẢ HỌC LIỆU
+        ===================================================== */
 
         .card p {
-            line-height: 1.7;
+            margin: 0 0 23px;
+
+            color: #43566a;
+
             font-size: 15.5px;
-            margin: 0 0 21px;
-            color: #445468;
+            font-weight: 400;
+            line-height: 1.75;
+
             flex-grow: 1;
         }
 
-        /* NÚT MỞ */
+
+        /* =====================================================
+           NÚT TRUY CẬP HỌC LIỆU
+        ===================================================== */
 
         .btn {
-            display: inline-block;
+            display: inline-flex;
             align-self: flex-start;
+            align-items: center;
 
-            padding: 12px 21px;
-            color: white;
+            padding: 10px 17px;
+
+            border-radius: 8px;
 
             text-decoration: none;
-            border-radius: 9px;
 
-            font-weight: bold;
-            font-size: 14.5px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.05px;
 
             transition:
+                background 0.2s ease,
                 transform 0.2s ease,
-                box-shadow 0.2s ease,
-                filter 0.2s ease;
+                box-shadow 0.2s ease;
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.06);
+            transform: translateY(-1px);
         }
 
         .btn-blue {
-            background: linear-gradient(135deg, #0b66c3, #168bd1);
-            box-shadow: 0 4px 12px rgba(11, 102, 195, 0.25);
+            color: #0759a5;
+            background: #edf5fc;
+            border: 1px solid #c9e0f4;
+        }
+
+        .btn-blue:hover {
+            background: #e1f0fb;
+            box-shadow: 0 4px 10px rgba(11, 103, 189, 0.12);
         }
 
         .btn-orange {
-            background: linear-gradient(135deg, #dc6f13, #ee9638);
-            box-shadow: 0 4px 12px rgba(220, 111, 19, 0.25);
+            color: #a9540b;
+            background: #fff4e6;
+            border: 1px solid #f1d2ac;
+        }
+
+        .btn-orange:hover {
+            background: #ffecd5;
+            box-shadow: 0 4px 10px rgba(217, 119, 22, 0.12);
         }
 
         .btn-green {
-            background: linear-gradient(135deg, #00897b, #26a69a);
-            box-shadow: 0 4px 12px rgba(0, 137, 123, 0.25);
+            color: #08766d;
+            background: #eaf7f5;
+            border: 1px solid #bfe2dc;
         }
 
-        /* ==============================
+        .btn-green:hover {
+            background: #def2ef;
+            box-shadow: 0 4px 10px rgba(8, 126, 116, 0.12);
+        }
+
+
+        /* =====================================================
            THÔNG TIN SỬ DỤNG
-        ============================== */
+        ===================================================== */
 
         .note {
             max-width: 920px;
-            margin: 40px auto 0;
 
-            background: linear-gradient(135deg, #ffffff, #f8fbff);
-
-            border-radius: 14px;
+            margin: 42px auto 0;
             padding: 22px 25px;
 
-            border-left: 5px solid #1677c8;
+            background: #ffffff;
 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2eaf2;
+            border-left: 4px solid #1976b9;
+            border-radius: 12px;
+
+            box-shadow: 0 4px 15px rgba(38, 65, 90, 0.05);
         }
 
         .note p {
-            margin: 7px 0;
+            margin: 6px 0;
+
+            color: #4c6074;
+
+            font-size: 15px;
             line-height: 1.7;
-            color: #445468;
         }
 
         .note strong {
-            color: #0b4f9c;
+            color: #0a579d;
+            font-weight: 600;
         }
 
-        /* ==============================
+
+        /* =====================================================
            CHÂN TRANG
-        ============================== */
+        ===================================================== */
 
         footer {
-            margin-top: 50px;
+            margin-top: 52px;
 
-            background: linear-gradient(180deg, #edf3f9, #e4edf6);
+            padding: 32px 20px 30px;
+
+            background: #edf3f8;
+            border-top: 1px solid #dce6ef;
 
             text-align: center;
-
-            padding: 30px 18px;
-
-            line-height: 1.8;
-            color: #4c5e70;
+            color: #526579;
         }
 
         .footer-title {
-            color: #0758a8;
+            color: #0759a5;
+
             font-size: 17px;
-            font-weight: 800;
-            letter-spacing: 0.4px;
-            margin-bottom: 4px;
+            font-weight: 700;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 7px;
         }
 
         .author-line {
+            color: #42586e;
+
             font-size: 15px;
-            margin-bottom: 11px;
+            line-height: 1.6;
+
+            margin-bottom: 15px;
         }
 
         .author-name {
-            color: #0758a8;
-            font-weight: 800;
+            color: #0759a5;
+            font-weight: 700;
         }
 
-        /* KHUNG AI */
 
-        .ai-box {
-            max-width: 850px;
-            margin: 12px auto 14px;
+        /* =====================================================
+           THÔNG TIN AI
+        ===================================================== */
 
-            background: linear-gradient(
-                135deg,
-                #f5f0ff,
-                #eee8ff
-            );
+        .ai-info {
+            max-width: 830px;
 
-            border: 1px solid #d7c9f5;
-            border-radius: 12px;
+            margin: 0 auto 16px;
+            padding: 12px 18px;
 
-            padding: 13px 18px;
+            background: rgba(255, 255, 255, 0.65);
 
-            color: #59427f;
+            border: 1px solid #d8e3ed;
+            border-radius: 9px;
 
-            font-size: 13.5px;
+            color: #586b7d;
+
+            font-size: 13px;
             line-height: 1.65;
         }
 
-        .ai-title {
-            color: #6741a5;
-            font-weight: 800;
+        .ai-label {
+            color: #345f85;
+            font-weight: 600;
+        }
+
+        .ai-symbol {
+            color: #547b9d;
             margin-right: 4px;
         }
 
+
+        /* =====================================================
+           DÒNG CUỐI CHÂN TRANG
+        ===================================================== */
+
         .footer-purpose {
-            color: #526779;
+            color: #596c7e;
+
             font-size: 14px;
+            line-height: 1.6;
+
+            margin-top: 3px;
         }
 
         .school-year {
-            margin-top: 3px;
-            color: #0b4f9c;
-            font-weight: 700;
+            color: #345f85;
+
             font-size: 14px;
+            font-weight: 600;
+
+            margin-top: 4px;
         }
 
-        /* ==============================
+
+        /* =====================================================
            MÁY TÍNH BẢNG
-        ============================== */
+        ===================================================== */
 
         @media (max-width: 950px) {
 
@@ -380,9 +480,10 @@
             }
         }
 
-        /* ==============================
+
+        /* =====================================================
            ĐIỆN THOẠI
-        ============================== */
+        ===================================================== */
 
         @media (max-width: 700px) {
 
@@ -417,25 +518,34 @@
             }
 
             .card {
-                padding: 23px;
+                padding: 24px;
             }
 
-            .ai-box {
+            .card h3 {
+                font-size: 20px;
+            }
+
+            footer {
+                padding: 28px 15px;
+            }
+
+            .ai-info {
+                padding: 11px 13px;
                 font-size: 12.5px;
-                padding: 12px 14px;
             }
         }
 
     </style>
+
 </head>
 
 
 <body>
 
 
-    <!-- ==============================
+    <!-- =====================================================
          ĐẦU TRANG
-    ============================== -->
+    ====================================================== -->
 
     <header>
 
@@ -450,9 +560,9 @@
     </header>
 
 
-    <!-- ==============================
+    <!-- =====================================================
          NỘI DUNG CHÍNH
-    ============================== -->
+    ====================================================== -->
 
     <main class="container">
 
@@ -472,27 +582,31 @@
         </section>
 
 
-        <!-- ==========================
+        <!-- =================================================
              DANH SÁCH HỌC LIỆU
-        =========================== -->
+        ================================================== -->
 
         <section class="grid">
 
 
-            <!-- ==================================
+            <!-- =================================================
                  HỌC LIỆU 1
                  CHUYẾN XE ĐẠI SỐ 9
-            =================================== -->
+            ================================================== -->
 
             <article class="card card-blue">
 
-                <div class="icon-box icon-blue">🚍</div>
+                <div class="icon-box icon-blue">
+                    🚍
+                </div>
 
                 <span class="tag tag-blue">
-                    TOÁN 9 • LUYỆN TẬP – VẬN DỤNG
+                    Toán 9 · Luyện tập và vận dụng
                 </span>
 
-                <h3>Chuyến xe Đại số 9</h3>
+                <h3>
+                    Chuyến xe Đại số 9
+                </h3>
 
                 <p>
                     Hỗ trợ học sinh củng cố, luyện tập và vận dụng kiến thức
@@ -503,26 +617,30 @@
                 </p>
 
                 <a class="btn btn-blue" href="Chuyenxe.html">
-                    Mở học liệu →
+                    Khám phá học liệu&nbsp; →
                 </a>
 
             </article>
 
 
-            <!-- ==================================
+            <!-- =================================================
                  HỌC LIỆU 2
                  PHÒNG THÍ NGHIỆM HỢP KIM
-            =================================== -->
+            ================================================== -->
 
             <article class="card card-orange">
 
-                <div class="icon-box icon-orange">🧪</div>
+                <div class="icon-box icon-orange">
+                    🧪
+                </div>
 
                 <span class="tag tag-orange">
-                    TOÁN 9 • HÌNH THÀNH KIẾN THỨC
+                    Toán 9 · Hình thành kiến thức
                 </span>
 
-                <h3>Phòng thí nghiệm hợp kim</h3>
+                <h3>
+                    Phòng thí nghiệm hợp kim
+                </h3>
 
                 <p>
                     Học liệu tương tác hỗ trợ học sinh hình thành
@@ -533,26 +651,30 @@
                 </p>
 
                 <a class="btn btn-orange" href="Phongthinghiemhopkim.html">
-                    Mở học liệu →
+                    Khám phá học liệu&nbsp; →
                 </a>
 
             </article>
 
 
-            <!-- ==================================
+            <!-- =================================================
                  HỌC LIỆU 3
-                 KHÁM PHÁ THẤU KÍNH
-            =================================== -->
+                 LENS EXPLORER
+            ================================================== -->
 
             <article class="card card-green">
 
-                <div class="icon-box icon-green">🔬</div>
+                <div class="icon-box icon-green">
+                    🔬
+                </div>
 
                 <span class="tag tag-green">
-                    KHTN 9 • HỌC LIỆU TƯƠNG TÁC
+                    KHTN 9 · Khám phá và luyện tập
                 </span>
 
-                <h3>Lens Explorer – Khám phá thấu kính</h3>
+                <h3>
+                    Lens Explorer – Khám phá thấu kính
+                </h3>
 
                 <p>
                     Học liệu tương tác và mô phỏng giúp học sinh
@@ -563,7 +685,7 @@
                 </p>
 
                 <a class="btn btn-green" href="Khamphathaukinh.html">
-                    Mở học liệu →
+                    Khám phá học liệu&nbsp; →
                 </a>
 
             </article>
@@ -572,9 +694,9 @@
         </section>
 
 
-        <!-- ==========================
+        <!-- =================================================
              THÔNG TIN SỬ DỤNG
-        =========================== -->
+        ================================================== -->
 
         <section class="note">
 
@@ -595,9 +717,9 @@
     </main>
 
 
-    <!-- ==============================
+    <!-- =====================================================
          CHÂN TRANG
-    ============================== -->
+    ====================================================== -->
 
     <footer>
 
@@ -607,21 +729,24 @@
 
         <div class="author-line">
             Thiết kế và biên soạn:
-            <span class="author-name">Bùi Thị Nghĩa</span>
+            <span class="author-name">
+                Bùi Thị Nghĩa
+            </span>
         </div>
 
 
-        <!-- THÔNG TIN SỬ DỤNG AI -->
+        <!-- THÔNG TIN AI -->
 
-        <div class="ai-box">
+        <div class="ai-info">
 
-            <span class="ai-title">
-                ✨ AI HỖ TRỢ THIẾT KẾ:
+            <span class="ai-symbol">✦</span>
+
+            <span class="ai-label">
+                AI hỗ trợ thiết kế:
             </span>
 
-            Có sử dụng công cụ AI hỗ trợ trong quá trình thiết kế
-            và phát triển học liệu; nội dung do người thiết kế đề xuất,
-            kiểm tra, điều chỉnh và chịu trách nhiệm.
+            Có sử dụng công cụ AI hỗ trợ trong quá trình thiết kế và phát triển học liệu;
+            nội dung do người thiết kế đề xuất, kiểm tra, điều chỉnh và chịu trách nhiệm.
 
         </div>
 
