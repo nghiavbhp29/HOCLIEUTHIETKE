@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ tay KHTN 9 – Điện trở và định luật Ohm</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration & Library -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            startup: {
+                pageReady: () => {
+                    return MathJax.startup.defaultPageReady();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+            .shadow-lg, .shadow-md, .shadow-sm { box-shadow: none !important; }
+            .border { border-color: #cbd5e1 !important; }
+            .page-break { page-break-before: always; }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        Ω
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Điện Trở – Định Luật Ohm</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Khám phá kiến thức – Luyện tập thông minh</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center space-x-1 sm:space-x-2">
+                    <button onclick="switchTab('theory')" id="tab-btn-theory" class="tab-btn active px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 flex items-center space-x-2 bg-brand-50 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>Kiến thức & Dạng bài</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 flex items-center space-x-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-laptop-code"></i>
+                        <span>Luyện Tập Trắc Nghiệm</span>
+                    </button>
+                    <button onclick="switchTab('history')" id="tab-btn-history" class="tab-btn px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 flex items-center space-x-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span class="hidden md:inline">Lịch Sử Làm Bài</span>
+                    </button>
+                </nav>
+
+                <!-- Actions: Dark Mode & Print -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors" title="Chuyển chế độ Sáng/Tối">
+                        <i id="theme-toggle-icon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                    <button onclick="window.print()" class="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white transition-colors hidden sm:block" title="In tài liệu">
+                        <i class="fa-solid fa-print text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= TAB 1: LÝ THUYẾT VÀ DẠNG TOÁN ================= -->
+        <div id="tab-theory" class="tab-content space-y-8">
+<div class="bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 rounded-2xl p-8 text-white shadow-xl"><span class="text-xs font-bold">KHOA HỌC TỰ NHIÊN 9 • BÀI 11</span><h2 class="text-3xl font-extrabold mt-3">ĐIỆN TRỞ. ĐỊNH LUẬT OHM</h2><p class="mt-3">Khám phá kiến thức – Luyện tập thông minh</p><button onclick="switchTab('quiz')" class="mt-5 bg-white text-indigo-700 px-5 py-3 rounded-xl font-bold">Bắt đầu luyện tập →</button></div>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-3">1. I. Điện trở</h3><p class="leading-relaxed">Điện trở có tác dụng cản trở dòng điện. Các vật dẫn khác nhau có thể cản trở dòng điện khác nhau. Với một đoạn dây dẫn, thương số <b>U/I</b> không đổi khi thay đổi hiệu điện thế đặt vào hai đầu đoạn dây đó. Đại lượng đặc trưng cho sự cản trở dòng điện gọi là điện trở: <b>R = U/I</b>.</p></section>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-3">2. II. Cường độ dòng điện phụ thuộc vào hiệu điện thế</h3><p class="leading-relaxed">Khi điện trở của đoạn dây dẫn không đổi, cường độ dòng điện chạy qua đoạn dây dẫn tỉ lệ thuận với hiệu điện thế giữa hai đầu đoạn dây dẫn. Đồ thị biểu diễn I theo U là đường thẳng đi qua gốc tọa độ.</p></section>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-3">3. III. Định luật Ohm</h3><p class="leading-relaxed">Cường độ dòng điện chạy qua một đoạn dây dẫn tỉ lệ thuận với hiệu điện thế giữa hai đầu đoạn dây và tỉ lệ nghịch với điện trở của đoạn dây: <b>I = U/R</b>. Trong đó U đo bằng vôn (V), I đo bằng ampe (A), R đo bằng ôm (Ω). <b>1 Ω = 1 V / 1 A</b>; 1 kΩ = 1000 Ω; 1 MΩ = 1 000 000 Ω.</p></section>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-3">4. IV. Điện trở của dây dẫn</h3><p class="leading-relaxed">Điện trở của một đoạn dây dẫn tỉ lệ thuận với chiều dài l, tỉ lệ nghịch với tiết diện S và phụ thuộc vào vật liệu làm dây: <b>R = ρl/S</b>. Trong đó ρ là điện trở suất (Ω·m), l tính bằng mét (m), S tính bằng mét vuông (m²).</p></section>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-3">5. V. Quy trình giải bài tập</h3><p class="leading-relaxed"><b>Bước 1:</b> Tóm tắt dữ kiện, đổi đơn vị. <b>Bước 2:</b> Xác định đại lượng cần tìm. <b>Bước 3:</b> Chọn công thức I = U/R, U = IR, R = U/I hoặc R = ρl/S. <b>Bước 4:</b> Thay số, tính toán, ghi đơn vị và kiểm tra tính hợp lí.</p></section>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-4">Khám phá thí nghiệm – Bảng 11.2</h3><p class="mb-3">Với điện trở không đổi, thay đổi hiệu điện thế để quan sát cường độ dòng điện và đồ thị.</p><label>Hiệu điện thế U: <strong id="u-value">6</strong> V</label><input id="u-slider" type="range" min="0" max="12" step="1" value="6" oninput="updateExperiment()" class="w-full accent-indigo-600"><label>Điện trở R: <strong id="r-value">6</strong> Ω</label><input id="r-slider" type="range" min="2" max="20" step="1" value="6" oninput="updateExperiment()" class="w-full accent-indigo-600"><div class="p-4 bg-indigo-50 dark:bg-slate-900 rounded-xl my-4"><p>Ampe kế chỉ: <strong id="i-value">1,00 A</strong></p><p class="text-sm">Mô hình lí tưởng minh họa định luật Ohm, không phải phép đo thực.</p></div><svg id="ohm-plot" viewBox="0 0 540 260" style="width:100%;max-width:650px" role="img" aria-label="Đồ thị I theo U"><line x1="55" y1="220" x2="510" y2="220" stroke="currentColor" stroke-width="2"/><line x1="55" y1="220" x2="55" y2="15" stroke="currentColor" stroke-width="2"/><text x="485" y="242" fill="currentColor">U (V)</text><text x="15" y="20" fill="currentColor">I (A)</text><path id="ohm-line" d="" stroke="#6366f1" stroke-width="3" fill="none"/><circle id="ohm-point" cx="55" cy="220" r="6" fill="#f97316"/></svg><p class="mt-3 text-sm">Đồ thị là đường thẳng qua gốc tọa độ. Khi R không đổi, U tăng thì I tăng theo cùng tỉ lệ.</p></section>
+<section class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm"><h3 class="text-xl font-bold text-brand-600 mb-4">Các dạng bài luyện tập</h3><div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="category-cards"></div></section></div>
+        <!-- ================= TAB 2: LUYỆN TẬP TRẮC NGHIỆM ================= -->
+        <div id="tab-quiz" class="tab-content hidden space-y-6">
+
+            <!-- Quiz Setup Panel -->
+            <div id="quiz-setup-card" class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-md max-w-3xl mx-auto space-y-6">
+                <div class="text-center space-y-2 border-b border-slate-100 dark:border-slate-700 pb-4">
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">Tùy Chọn Đề Luyện Tập Trắc Nghiệm</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Hệ thống tạo câu hỏi theo dữ liệu vật lí hợp lí, có lời giải và đơn vị đo.
+                    </p>
+                </div>
+
+                <form id="quiz-config-form" onsubmit="event.preventDefault(); initQuizFromForm();" class="space-y-6">
+                    <!-- Choose Problem Category -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                            <i class="fa-solid fa-list-check mr-2 text-brand-600"></i>Chọn Dạng Toán Luyện Tập:
+                        </label>
+                        <select id="select-category" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition">
+                            <option value="all">🌟 Tổng hợp tất cả 8 dạng</option>
+                            <option value="d1">Dạng 1: Nhận biết điện trở và đơn vị</option>
+                            <option value="d2">Dạng 2: Đọc bảng số liệu và đồ thị I–U</option>
+                            <option value="d3">Dạng 3: Tính cường độ dòng điện I</option>
+                            <option value="d4">Dạng 4: Tính hiệu điện thế U</option>
+                            <option value="d5">Dạng 5: Tính điện trở R</option>
+                            <option value="d6">Dạng 6: Đổi đơn vị điện trở</option>
+                            <option value="d7">Dạng 7: Điện trở theo chiều dài và tiết diện</option>
+                            <option value="d8">Dạng 8: Điện trở suất và vận dụng</option>
+                        </select>
+                    </div>
+
+                    <!-- Choose Question Count -->
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">
+                            <i class="fa-solid fa-hashtag mr-2 text-brand-600"></i>Số lượng câu hỏi mỗi lượt:
+                        </label>
+                        <div class="grid grid-cols-4 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="question_count" value="5" class="peer hidden" checked>
+                                <div class="py-3 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 peer-checked:bg-brand-600 peer-checked:text-white peer-checked:border-brand-600 font-bold transition">
+                                    5 Câu
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="question_count" value="10" class="peer hidden">
+                                <div class="py-3 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 peer-checked:bg-brand-600 peer-checked:text-white peer-checked:border-brand-600 font-bold transition">
+                                    10 Câu
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="question_count" value="15" class="peer hidden">
+                                <div class="py-3 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 peer-checked:bg-brand-600 peer-checked:text-white peer-checked:border-brand-600 font-bold transition">
+                                    15 Câu
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="question_count" value="20" class="peer hidden">
+                                <div class="py-3 text-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 peer-checked:bg-brand-600 peer-checked:text-white peer-checked:border-brand-600 font-bold transition">
+                                    20 Câu
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Start Button -->
+                    <button type="submit" class="w-full py-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white font-black text-lg rounded-xl shadow-lg hover:shadow-xl transition-all transform active:scale-95 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-play"></i>
+                        <span>BẮT ĐẦU LÀM BÀI TRẮC NGHIỆM</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Active Quiz Arena Container (Hidden by default) -->
+            <div id="quiz-arena" class="hidden space-y-6">
+                
+                <!-- Quiz Header Bar (Timer & Controls) -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap items-center justify-between gap-4 sticky top-20 z-30">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800">
+                            <i class="fa-solid fa-stopwatch text-lg animate-pulse"></i>
+                            <span id="quiz-timer" class="font-mono text-lg font-bold">00:00</span>
+                        </div>
+                        <div class="text-sm font-semibold text-slate-600 dark:text-slate-300">
+                            Đang làm câu: <span id="current-question-num" class="text-brand-600 dark:text-brand-400 font-bold">1</span> / <span id="total-questions-num">10</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <button onclick="confirmSubmitQuiz()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg shadow transition flex items-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Nộp Bài</span>
+                        </button>
+                        <button onclick="quitQuiz()" class="px-3 py-2 text-slate-500 hover:text-rose-600 text-sm font-medium transition">
+                            Hủy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Navigation Grid Bar for Questions -->
+                <div id="question-nav-grid" class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-wrap gap-2 justify-center">
+                    <!-- Dynamic Question Buttons dynamically appended here -->
+                </div>
+
+                <!-- Active Question Card -->
+                <div id="active-question-card" class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-md space-y-6">
+                    <!-- Question Title & Category Badge -->
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                        <span id="question-category-badge" class="px-3 py-1 bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 rounded-full text-xs font-bold">
+                            Dạng 1
+                        </span>
+                        <span id="question-index-label" class="text-xs font-bold text-slate-400">
+                            CÂU 1
+                        </span>
+                    </div>
+
+                    <!-- Question Text (MathJax Processed) -->
+                    <div id="question-text" class="text-base sm:text-lg font-medium text-slate-900 dark:text-white leading-relaxed">
+                        <!-- Question content injected here -->
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                        <!-- Dynamic Options generated here -->
+                    </div>
+
+                    <!-- Bottom Nav Buttons -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700">
+                        <button id="btn-prev-q" onclick="navigateQuestion(-1)" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-bold hover:bg-slate-200 transition disabled:opacity-40">
+                            <i class="fa-solid fa-chevron-left mr-1"></i> Câu trước
+                        </button>
+                        <button id="btn-next-q" onclick="navigateQuestion(1)" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-bold hover:bg-brand-700 transition">
+                            Câu tiếp <i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Results Summary View (Hidden by default) -->
+            <div id="quiz-results-card" class="hidden space-y-8">
+                <!-- Result Banner -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-lg text-center space-y-4">
+                    <div class="w-20 h-20 mx-auto rounded-full bg-brand-100 dark:bg-brand-900/40 text-brand-600 dark:text-brand-400 flex items-center justify-center text-3xl font-black shadow-inner">
+                        <span id="res-score">8.0</span>
+                    </div>
+                    <div>
+                        <h2 id="res-status-text" class="text-2xl font-extrabold text-slate-900 dark:text-white">Xuất Sắc!</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Bạn đã hoàn thành bài luyện tập thành công.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto pt-4">
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                            <div class="text-xs text-slate-500">Số câu đúng</div>
+                            <div id="res-correct-count" class="text-lg font-bold text-emerald-600">8 / 10</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                            <div class="text-xs text-slate-500">Số câu sai</div>
+                            <div id="res-wrong-count" class="text-lg font-bold text-rose-500">2</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                            <div class="text-xs text-slate-500">Thời gian</div>
+                            <div id="res-time-taken" class="text-lg font-bold text-amber-500">03:45</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                            <div class="text-xs text-slate-500">Độ chính xác</div>
+                            <div id="res-accuracy" class="text-lg font-bold text-indigo-500">80%</div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center space-x-4 pt-4">
+                        <button onclick="restartQuiz()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow transition flex items-center space-x-2">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>Làm Lại Đề Này</span>
+                        </button>
+                        <button onclick="backToQuizConfig()" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 text-slate-800 dark:text-white font-bold rounded-xl transition flex items-center space-x-2">
+                            <i class="fa-solid fa-list"></i>
+                            <span>Chọn Dạng Khác</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Detailed Solutions Title -->
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-file-lines text-brand-600"></i>
+                        <span>Lời Giải Chi Tiết Từng Câu</span>
+                    </h3>
+                </div>
+
+                <!-- Solutions Container -->
+                <div id="solutions-list-container" class="space-y-6">
+                    <!-- Dynamic Solutions Rendered Here -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= TAB 3: LỊCH SỬ LÀM BÀI ================= -->
+        <div id="tab-history" class="tab-content hidden space-y-6">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                        <i class="fa-solid fa-clock-rotate-left text-brand-600"></i>
+                        <span>Lịch Sử Luyện Tập</span>
+                    </h3>
+                    <button onclick="clearQuizHistory()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold flex items-center space-x-1">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Xóa lịch sử</span>
+                    </button>
+                </div>
+
+                <div id="history-table-container" class="overflow-x-auto">
+                    <!-- Dynamic History Table -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Modal Dialog (Replacing alert/confirm) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 transform transition-all">
+            <h4 id="modal-title" class="text-lg font-bold text-slate-900 dark:text-white">Thông báo</h4>
+            <p id="modal-message" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed"></p>
+            <div id="modal-actions" class="flex justify-end space-x-3 pt-2">
+                <!-- Dynamic Modal Buttons -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           DYNAMIC MATH GENERATOR SYSTEM & LOGIC (STRICT BEAUTIFUL NUMBERS)
+           ========================================================================== */
+
+        // Utility Helper Functions
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomNonZeroInt(min, max) {
+            let res = 0;
+            while(res === 0) res = getRandomInt(min, max);
+            return res;
+        }
+
+        function gcd(a, b) {
+            return b === 0 ? Math.abs(a) : gcd(b, a % b);
+        }
+
+        function formatCoefficient(coef, varName, isFirst = false) {
+            if (coef === 0) return '';
+            let sign = coef > 0 ? (isFirst ? '' : ' + ') : (isFirst ? '-' : ' - ');
+            let absVal = Math.abs(coef);
+            let valStr = (absVal === 1 && varName !== '') ? '' : absVal;
+            return `${sign}${valStr}${varName}`;
+        }
+
+        function formatQuadratic(a, b, c) {
+            let res = formatCoefficient(a, 'x^2', true);
+            let bStr = formatCoefficient(b, 'x', false);
+            let cStr = '';
+            if (c > 0) cStr = ` + ${c}`;
+            else if (c < 0) cStr = ` - ${Math.abs(c)}`;
+            
+            let eq = `${res}${bStr}${cStr} = 0`;
+            return eq.replace(/\+\s\-/g, '- ');
+        }
+
+        function shuffleArray(arr) {
+            let array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        /* Sinh câu hỏi KHTN 9 – dữ liệu có kiểm soát */
+        const types=[['d1','Nhận biết điện trở và đơn vị'],['d2','Đọc bảng số liệu và đồ thị I–U'],['d3','Tính cường độ dòng điện I'],['d4','Tính hiệu điện thế U'],['d5','Tính điện trở R'],['d6','Đổi đơn vị điện trở'],['d7','Điện trở theo chiều dài và tiết diện'],['d8','Điện trở suất và vận dụng']];
+        const ri=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+        function numericQ(cat,q,correct,wrong,ex){let opts=[correct,...wrong].map(String);opts=[...new Set(opts)];let k=1;while(opts.length<4)opts.push('Giá trị khác '+k++);return createQuestionObject(cat,q,opts.slice(0,4),0,ex)}
+        function generateCategory1(){
+            const sub=ri(0,4), U=ri(2,24), R=ri(2,20), factor=ri(2,5);
+            if(sub===0) return createQuestionObject('Dạng 1: Nhận biết',`Một đoạn dây dẫn có điện trở ${R} Ω. Đại lượng nào đặc trưng cho mức độ cản trở dòng điện của đoạn dây này?`,['Điện trở','Hiệu điện thế','Cường độ dòng điện','Chiều dài dây dẫn'],0,'Điện trở đặc trưng cho mức độ cản trở dòng điện của đoạn dây dẫn.');
+            if(sub===1) return createQuestionObject('Dạng 1: Nhận biết',`Trong bảng số liệu, điện trở của dây dẫn được ghi là ${R} Ω. Kí hiệu Ω biểu thị đơn vị nào?`,['Ôm','Vôn','Ampe','Mét'],0,'Ω là kí hiệu của ôm, đơn vị đo điện trở.');
+            if(sub===2) return createQuestionObject('Dạng 1: Nhận biết',`Một đoạn dây dẫn có điện trở không đổi ${R} Ω. Nếu hiệu điện thế tăng ${factor} lần thì cường độ dòng điện thay đổi thế nào?`,[`Tăng ${factor} lần`,`Giảm ${factor} lần`,'Không đổi',`Tăng ${factor*factor} lần`],0,'Theo định luật Ohm, khi R không đổi, I tỉ lệ thuận với U.');
+            if(sub===3) return createQuestionObject('Dạng 1: Nhận biết',`Đặt hiệu điện thế ${U} V vào hai đầu đoạn dây dẫn có điện trở ${R} Ω. Công thức đúng để tính cường độ dòng điện là gì?`,['I = U/R','I = U × R','I = R/U','I = U + R'],0,'Theo định luật Ohm, I = U/R.');
+            return createQuestionObject('Dạng 1: Nhận biết',`Đoạn dây dẫn có điện trở ${R} Ω. Nếu giữ nguyên hiệu điện thế và điện trở tăng ${factor} lần, cường độ dòng điện thay đổi thế nào?`,[`Giảm ${factor} lần`,`Tăng ${factor} lần`,'Không đổi',`Tăng ${factor*factor} lần`],0,'Theo I = U/R, khi U không đổi, I tỉ lệ nghịch với R.');
+        }
+        function generateCategory2(){let R=ri(2,12),u=R*ri(1,4),i=u/R;let sub=ri(0,1);return sub===0?numericQ('Dạng 2: Bảng số liệu',`Trong thí nghiệm, khi U = ${u} V thì I = ${i} A. Nếu hiệu điện thế tăng gấp đôi và điện trở không đổi, I bằng bao nhiêu?`,`${2*i} A`,[`${i} A`,`${i/2} A`,`${3*i} A`],`Vì I tỉ lệ thuận với U nên I mới = 2 × ${i} = ${2*i} A.`):createQuestionObject('Dạng 2: Đồ thị','Đồ thị biểu diễn cường độ dòng điện I theo hiệu điện thế U của một đoạn dây dẫn có điện trở không đổi có dạng nào?',['Đường thẳng đi qua gốc tọa độ','Đường cong không đi qua gốc tọa độ','Đường thẳng song song trục U','Đường tròn'],0,'Vì I = U/R với R không đổi nên I tỉ lệ thuận với U; đồ thị là đường thẳng đi qua gốc tọa độ.')}
+        function generateCategory3(){let R=ri(2,15),I=ri(1,5),U=R*I;return numericQ('Dạng 3: Tính I',`Đặt hiệu điện thế U = ${U} V vào hai đầu điện trở R = ${R} Ω. Cường độ dòng điện bằng bao nhiêu?`,`${I} A`,[`${U+R} A`,`${R} A`,`${U} A`],`Theo định luật Ohm: I = U/R = ${U}/${R} = ${I} A.`)}
+        function generateCategory4(){let R=ri(2,15),I=ri(1,5),U=R*I;return numericQ('Dạng 4: Tính U',`Dòng điện ${I} A chạy qua điện trở ${R} Ω. Hiệu điện thế giữa hai đầu điện trở là bao nhiêu?`,`${U} V`,[`${R+I} V`,`${R} V`,`${Math.max(1,R-I)} V`],`U = I × R = ${I} × ${R} = ${U} V.`)}
+        function generateCategory5(){let R=ri(2,18),I=ri(1,5),U=R*I;return numericQ('Dạng 5: Tính R',`Một đoạn dây dẫn có U = ${U} V, I = ${I} A. Điện trở của đoạn dây là bao nhiêu?`,`${R} Ω`,[`${U*I} Ω`,`${U+I} Ω`,`${I} Ω`],`R = U/I = ${U}/${I} = ${R} Ω.`)}
+        function generateCategory6(){let n=ri(2,90),sub=ri(0,1);return sub===0?numericQ('Dạng 6: Đổi đơn vị',`Đổi ${n} kΩ sang Ω.`,`${n*1000} Ω`,[`${n} Ω`,`${n*100} Ω`,`${n/1000} Ω`],`1 kΩ = 1000 Ω nên ${n} kΩ = ${n*1000} Ω.`):numericQ('Dạng 6: Đổi đơn vị',`Đổi ${n*1000} Ω sang kΩ.`,`${n} kΩ`,[`${n*1000} kΩ`,`${n/10} kΩ`,`${n*10} kΩ`],`Chia số ôm cho 1000: ${n*1000}/1000 = ${n} kΩ.`)}
+        function generateCategory7(){let R=ri(3,16),factor=ri(2,4),sub=ri(0,1);return sub===0?numericQ('Dạng 7: Kích thước dây',`Một dây dẫn có điện trở ${R} Ω. Nếu tăng chiều dài dây lên ${factor} lần, giữ nguyên vật liệu và tiết diện, điện trở mới là bao nhiêu?`,`${R*factor} Ω`,[`${R} Ω`,`${R/factor} Ω`,`${R+factor} Ω`],`R = ρl/S; R tỉ lệ thuận với l nên R mới = ${R} × ${factor} = ${R*factor} Ω.`):numericQ('Dạng 7: Kích thước dây',`Một dây dẫn có điện trở ${R*factor} Ω. Nếu tăng tiết diện dây lên ${factor} lần, giữ nguyên vật liệu và chiều dài, điện trở mới là bao nhiêu?`,`${R} Ω`,[`${R*factor*factor} Ω`,`${R*factor} Ω`,`${R+factor} Ω`],`R tỉ lệ nghịch với S nên R mới = ${R*factor}/${factor} = ${R} Ω.`)}
+        function generateCategory8(){let l=ri(2,10)*10, S=ri(1,5),rho=1.7e-8,R=rho*l/(S*1e-6);let answer=Number(R.toFixed(5));return numericQ('Dạng 8: Điện trở suất',`Dây đồng dài ${l} m, tiết diện ${S} mm², điện trở suất ρ = 1,7 × 10⁻⁸ Ω·m. Điện trở của dây gần bằng bao nhiêu?`,`${answer} Ω`,[`${Number((answer*10).toFixed(5))} Ω`,`${Number((answer/10).toFixed(5))} Ω`,`${Number((answer*2).toFixed(5))} Ω`],`Đổi S = ${S} × 10⁻⁶ m². Áp dụng R = ρl/S = (1,7 × 10⁻⁸ × ${l})/(${S} × 10⁻⁶) ≈ ${answer} Ω.`)}
+        function updateExperiment(){const u=+document.getElementById('u-slider').value,r=+document.getElementById('r-slider').value;document.getElementById('u-value').textContent=u;document.getElementById('r-value').textContent=r;document.getElementById('i-value').textContent=(u/r).toFixed(2).replace('.',',')+' A';const x=55+u/12*440,y=220-(u/r)/6*190;document.getElementById('ohm-line').setAttribute('d',`M55 220 L495 ${220-(12/r)/6*190}`);document.getElementById('ohm-point').setAttribute('cx',x);document.getElementById('ohm-point').setAttribute('cy',y)}
+        function renderCategoryCards(){const el=document.getElementById('category-cards');if(!el)return;el.innerHTML=types.map(([id,name],i)=>`<button onclick="startQuizWithType('${id}',5)" class="text-left p-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-500 bg-slate-50 dark:bg-slate-900"><strong class="text-brand-600">Dạng ${i+1}</strong><div class="font-semibold mt-1">${name}</div><span class="text-sm text-brand-600">Luyện 5 câu →</span></button>`).join('')}
+        // Helper to construct normalized question structure
+        function createQuestionObject(category, question, optionsRaw, correctIdxRaw, explanation) {
+            // Shuffle options to randomize answer positions
+            let indexedOpts = optionsRaw.map((opt, idx) => ({ text: opt, isCorrect: idx === correctIdxRaw }));
+            indexedOpts = shuffleArray(indexedOpts);
+
+            let newCorrectIdx = indexedOpts.findIndex(o => o.isCorrect);
+            let finalOptions = indexedOpts.map(o => o.text);
+
+            return {
+                category: category,
+                question: question,
+                options: finalOptions,
+                correctIndex: newCorrectIdx,
+                explanation: explanation
+            };
+        }
+
+        /* --------------------------------------------------------------------------
+           QUIZ ENGINE STATE & CONTROLLER
+           -------------------------------------------------------------------------- */
+        
+        let quizState = {
+            questions: [],
+            userAnswers: [],
+            currentIndex: 0,
+            timerInterval: null,
+            secondsElapsed: 0,
+            category: 'all',
+            count: 10
+        };
+
+        // Tab Switching Handler
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-brand-50', 'dark:bg-brand-900/40', 'text-brand-600', 'dark:text-brand-400');
+                btn.classList.add('text-slate-600', 'dark:text-slate-300');
+            });
+
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'bg-brand-50', 'dark:bg-brand-900/40', 'text-brand-600', 'dark:text-brand-400');
+                activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+            }
+
+            if (tabName === 'history') {
+                renderHistoryTable();
+            }
+        }
+
+        // Start Quiz from Configuration Form
+        function initQuizFromForm() {
+            const catSelect = document.getElementById('select-category').value;
+            const countRadio = document.querySelector('input[name="question_count"]:checked').value;
+            startQuizWithType(catSelect, parseInt(countRadio));
+        }
+
+        function startQuizWithType(category, count) {
+            switchTab('quiz');
+            
+            // Show Arena, Hide Config & Results
+            document.getElementById('quiz-setup-card').classList.add('hidden');
+            document.getElementById('quiz-results-card').classList.add('hidden');
+            document.getElementById('quiz-arena').classList.remove('hidden');
+
+            // Generate Questions
+            let generated = [];
+            const generators = {'d1':generateCategory1,'d2':generateCategory2,'d3':generateCategory3,'d4':generateCategory4,'d5':generateCategory5,'d6':generateCategory6,'d7':generateCategory7,'d8':generateCategory8};
+
+            // Mỗi đề chỉ nhận câu hỏi có nội dung khác nhau; không thay đổi đáp án đã đảo.
+            const usedQuestions = new Set();
+            const keys = Object.keys(generators);
+            let attempts = 0;
+            const maxAttempts = Math.max(3000, count * 500);
+            while (generated.length < count && attempts < maxAttempts) {
+                attempts++;
+                const key = category === 'all' ? keys[Math.floor(Math.random() * keys.length)] : category;
+                const candidate = generators[key]();
+                const fingerprint = candidate.question.replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim().toLocaleLowerCase('vi');
+                if (usedQuestions.has(fingerprint)) continue;
+                // Bốn phương án phải khác nhau, tránh câu hỏi mơ hồ.
+                if (new Set(candidate.options.map(o=>String(o).trim())).size !== candidate.options.length) continue;
+                usedQuestions.add(fingerprint);
+                generated.push(candidate);
+            }
+            if (generated.length < count) {
+                // Không lặp câu để bù số lượng nếu nguồn sinh chưa đủ.
+                showModal('Thông báo', `Chỉ tạo được ${generated.length} câu khác nhau trong dạng đã chọn. Hãy chọn đề tổng hợp hoặc số câu ít hơn.`, [{text:'Đã hiểu',class:'bg-brand-600 text-white',onClick:()=>backToQuizConfig()}]);
+                return;
+            }
+
+            quizState.questions = generated;
+            quizState.userAnswers = new Array(count).fill(null);
+            quizState.currentIndex = 0;
+            quizState.secondsElapsed = 0;
+            quizState.category = category;
+            quizState.count = count;
+
+            // Start Timer
+            if (quizState.timerInterval) clearInterval(quizState.timerInterval);
+            quizState.timerInterval = setInterval(() => {
+                quizState.secondsElapsed++;
+                const mins = String(Math.floor(quizState.secondsElapsed / 60)).padStart(2, '0');
+                const secs = String(quizState.secondsElapsed % 60).padStart(2, '0');
+                document.getElementById('quiz-timer').innerText = `${mins}:${secs}`;
+            }, 1000);
+
+            // Render Nav Grid & Current Question
+            renderQuestionNavGrid();
+            renderActiveQuestion();
+        }
+
+        function renderQuestionNavGrid() {
+            const grid = document.getElementById('question-nav-grid');
+            grid.innerHTML = '';
+
+            quizState.questions.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `nav-q-${idx}`;
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.className = `w-9 h-9 text-xs font-bold rounded-lg transition border flex items-center justify-center ${
+                    idx === quizState.currentIndex 
+                    ? 'bg-brand-600 text-white border-brand-600 shadow-md ring-2 ring-brand-300' 
+                    : (quizState.userAnswers[idx] !== null 
+                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700' 
+                        : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100')
+                }`;
+                btn.innerText = idx + 1;
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderActiveQuestion() {
+            const q = quizState.questions[quizState.currentIndex];
+            document.getElementById('current-question-num').innerText = quizState.currentIndex + 1;
+            document.getElementById('total-questions-num').innerText = quizState.questions.length;
+            
+            document.getElementById('question-category-badge').innerText = q.category;
+            document.getElementById('question-index-label').innerText = `CÂU ${quizState.currentIndex + 1}`;
+            document.getElementById('question-text').innerHTML = q.question;
+
+            // Options
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+
+            const prefixes = ['A', 'B', 'C', 'D'];
+            q.options.forEach((optText, optIdx) => {
+                const isSelected = quizState.userAnswers[quizState.currentIndex] === optIdx;
+                const optBtn = document.createElement('button');
+                optBtn.onclick = () => selectOption(optIdx);
+                optBtn.className = `p-4 rounded-xl border text-left transition flex items-center space-x-3 ${
+                    isSelected 
+                    ? 'border-brand-600 bg-brand-50 dark:bg-brand-900/30 text-brand-900 dark:text-brand-100 font-semibold ring-2 ring-brand-500/20' 
+                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 text-slate-800 dark:text-slate-200'
+                }`;
+
+                optBtn.innerHTML = `
+                    <span class="w-8 h-8 rounded-lg ${isSelected ? 'bg-brand-600 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'} flex items-center justify-center font-bold text-sm shrink-0">
+                        ${prefixes[optIdx]}
+                    </span>
+                    <span class="text-sm leading-snug">${optText}</span>
+                `;
+                optContainer.appendChild(optBtn);
+            });
+
+            // Update Nav Buttons
+            document.getElementById('btn-prev-q').disabled = quizState.currentIndex === 0;
+            document.getElementById('btn-next-q').innerText = quizState.currentIndex === quizState.questions.length - 1 ? 'Xem lại bài' : 'Câu tiếp';
+
+            // Typeset MathJax
+            if (window.MathJax) {
+                MathJax.typesetPromise([document.getElementById('question-text'), optContainer]);
+            }
+        }
+
+        function selectOption(optIdx) {
+            quizState.userAnswers[quizState.currentIndex] = optIdx;
+            renderQuestionNavGrid();
+            renderActiveQuestion();
+        }
+
+        function jumpToQuestion(index) {
+            quizState.currentIndex = index;
+            renderActiveQuestion();
+        }
+
+        function navigateQuestion(step) {
+            const nextIdx = quizState.currentIndex + step;
+            if (nextIdx >= 0 && nextIdx < quizState.questions.length) {
+                quizState.currentIndex = nextIdx;
+                renderActiveQuestion();
+            }
+        }
+
+        // Submit & Evaluation
+        function confirmSubmitQuiz() {
+            const unanswered = quizState.userAnswers.filter(a => a === null).length;
+            let msg = unanswered > 0 
+                ? `Bạn còn ${unanswered} câu chưa trả lời. Bạn có chắc chắn muốn nộp bài?` 
+                : "Bạn có chắc chắn muốn nộp bài thi ngay bây giờ?";
+
+            showModal("Xác Nhận Nộp Bài", msg, [
+                { text: "Làm Tiếp", class: "bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white" },
+                { text: "Nộp Bài Ngay", class: "bg-emerald-600 text-white", onClick: submitQuiz }
+            ]);
+        }
+
+        function submitQuiz() {
+            clearInterval(quizState.timerInterval);
+
+            let correctCount = 0;
+            quizState.questions.forEach((q, idx) => {
+                if (quizState.userAnswers[idx] === q.correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            const total = quizState.questions.length;
+            const score = Math.round((correctCount / total) * 100) / 10;
+            const accuracy = Math.round((correctCount / total) * 100);
+
+            // Time string
+            const mins = String(Math.floor(quizState.secondsElapsed / 60)).padStart(2, '0');
+            const secs = String(quizState.secondsElapsed % 60).padStart(2, '0');
+            const timeStr = `${mins}:${secs}`;
+
+            // Render Results Summary
+            document.getElementById('res-score').innerText = score.toFixed(1);
+            document.getElementById('res-correct-count').innerText = `${correctCount} / ${total}`;
+            document.getElementById('res-wrong-count').innerText = total - correctCount;
+            document.getElementById('res-time-taken').innerText = timeStr;
+            document.getElementById('res-accuracy').innerText = `${accuracy}%`;
+
+            let statusText = "Hãy Cố Gắng Thêm!";
+            if (score >= 9.0) statusText = "Xuất Sắc! Rất Giỏi!";
+            else if (score >= 7.0) statusText = "Thành Tích Tốt!";
+            else if (score >= 5.0) statusText = "Đạt Yêu Cầu!";
+            document.getElementById('res-status-text').innerText = statusText;
+
+            // Render Detailed Solution Cards
+            renderDetailedSolutions();
+
+            // Save to localStorage
+            saveQuizResult({
+                date: new Date().toLocaleString('vi-VN'),
+                category: quizState.category,
+                score: score,
+                correct: `${correctCount}/${total}`,
+                time: timeStr
+            });
+
+            // Switch view
+            document.getElementById('quiz-arena').classList.add('hidden');
+            document.getElementById('quiz-results-card').classList.remove('hidden');
+        }
+
+        function renderDetailedSolutions() {
+            const container = document.getElementById('solutions-list-container');
+            container.innerHTML = '';
+
+            const prefixes = ['A', 'B', 'C', 'D'];
+
+            quizState.questions.forEach((q, idx) => {
+                const userChoice = quizState.userAnswers[idx];
+                const isCorrect = userChoice === q.correctIndex;
+
+                const solCard = document.createElement('div');
+                solCard.className = `p-6 rounded-2xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/30 dark:bg-emerald-950/20' : 'border-rose-200 bg-rose-50/30 dark:bg-rose-950/20'} space-y-4`;
+
+                let userAnsText = userChoice !== null ? `${prefixes[userChoice]}. ${q.options[userChoice]}` : '<span class="text-slate-400 font-normal">Chưa chọn đáp án</span>';
+                let correctAnsText = `${prefixes[q.correctIndex]}. ${q.options[q.correctIndex]}`;
+
+                solCard.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-3">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2.5 py-1 rounded-md ${isCorrect ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white'} text-xs font-bold">
+                                Câu ${idx + 1}: ${isCorrect ? 'ĐÚNG' : 'SAI'}
+                            </span>
+                            <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">${q.category}</span>
+                        </div>
+                    </div>
+
+                    <div class="text-base font-medium text-slate-900 dark:text-white leading-relaxed">
+                        ${q.question}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-slate-500 block mb-1">Lựa chọn của bạn:</span>
+                            <div class="font-semibold ${isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">${userAnsText}</div>
+                        </div>
+                        <div class="p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-slate-500 block mb-1">Đáp án chính xác:</span>
+                            <div class="font-semibold text-emerald-600 dark:text-emerald-400">${correctAnsText}</div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                        <div class="font-bold text-brand-600 dark:text-brand-400 flex items-center space-x-1">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <span>Lời Giải Chi Tiết:</span>
+                        </div>
+                        <div class="pt-1 whitespace-pre-line leading-relaxed">${q.explanation}</div>
+                    </div>
+                `;
+                container.appendChild(solCard);
+            });
+
+            if (window.MathJax) {
+                MathJax.typesetPromise([container]);
+            }
+        }
+
+        // Restart / Nav Controls
+        function restartQuiz() {
+            startQuizWithType(quizState.category, quizState.count);
+        }
+
+        function backToQuizConfig() {
+            if (quizState.timerInterval) clearInterval(quizState.timerInterval);
+            document.getElementById('quiz-arena').classList.add('hidden');
+            document.getElementById('quiz-results-card').classList.add('hidden');
+            document.getElementById('quiz-setup-card').classList.remove('hidden');
+        }
+
+        function quitQuiz() {
+            showModal("Hủy Bài Luyện Tập", "Bạn có chắc chắn muốn dừng bài làm? Tiến trình hiện tại sẽ bị xóa.", [
+                { text: "Tiếp Tục Làm", class: "bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white" },
+                { text: "Đồng Ý Hủy", class: "bg-rose-600 text-white", onClick: backToQuizConfig }
+            ]);
+        }
+
+        /* --------------------------------------------------------------------------
+           LOCALSTORAGE & HISTORY MANAGEMENT
+           -------------------------------------------------------------------------- */
+        
+        function saveQuizResult(record) {
+            let history = JSON.parse(localStorage.getItem('quad_equation_ohm_quiz_history') || '[]');
+            history.unshift(record); // Add to top
+            if (history.length > 20) history.pop(); // Max 20 records
+            localStorage.setItem('quad_equation_ohm_quiz_history', JSON.stringify(history));
+        }
+
+        function renderHistoryTable() {
+            const container = document.getElementById('history-table-container');
+            let history = JSON.parse(localStorage.getItem('quad_equation_ohm_quiz_history') || '[]');
+
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-slate-400 space-y-2">
+                        <i class="fa-solid fa-folder-open text-4xl"></i>
+                        <p class="text-sm">Chưa có lịch sử làm bài. Hãy hoàn thành đề trắc nghiệm đầu tiên!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let catNames = {
+                'all': 'Tổng hợp tất cả dạng',
+                'd1': 'Dạng 1: Hệ số & Dạng khuyết',
+                'd2': 'Dạng 2: Biệt thức Delta & Giải PT',
+                'd3': 'Dạng 3: Định lý Vi-ét',
+                'd4': 'Dạng 4: PT Quy về bậc hai',
+                'd5': 'Dạng 5: Bài toán tham số m'
+            };
+
+            let html = `
+                <table class="w-full text-sm text-left text-slate-600 dark:text-slate-300">
+                    <thead class="text-xs uppercase bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                        <tr>
+                            <th class="px-4 py-3 rounded-l-lg">Thời Gian</th>
+                            <th class="px-4 py-3">Dạng Toán</th>
+                            <th class="px-4 py-3">Số Câu Đúng</th>
+                            <th class="px-4 py-3">Thời Gian Làm</th>
+                            <th class="px-4 py-3 rounded-r-lg">Điểm Số</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+            `;
+
+            history.forEach(item => {
+                html += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                        <td class="px-4 py-3 font-medium text-slate-900 dark:text-white">${item.date}</td>
+                        <td class="px-4 py-3">${catNames[item.category] || item.category}</td>
+                        <td class="px-4 py-3 font-semibold text-emerald-600">${item.correct}</td>
+                        <td class="px-4 py-3">${item.time}</td>
+                        <td class="px-4 py-3"><span class="px-2 py-1 rounded bg-brand-100 dark:bg-brand-900/50 text-brand-700 dark:text-brand-300 font-bold">${item.score}</span></td>
+                    </tr>
+                `;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function clearQuizHistory() {
+            showModal("Xóa Lịch Sử", "Bạn có chắc chắn muốn xóa toàn bộ dữ liệu kết quả làm bài?", [
+                { text: "Hủy", class: "bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white" },
+                { text: "Xóa Hết", class: "bg-rose-600 text-white", onClick: () => {
+                    localStorage.removeItem('quad_equation_ohm_quiz_history');
+                    renderHistoryTable();
+                }}
+            ]);
+        }
+
+        /* --------------------------------------------------------------------------
+           MODAL SYSTEM & THEME
+           -------------------------------------------------------------------------- */
+
+        function showModal(title, message, buttons) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            
+            const actionsContainer = document.getElementById('modal-actions');
+            actionsContainer.innerHTML = '';
+
+            buttons.forEach(btn => {
+                const b = document.createElement('button');
+                b.className = `px-4 py-2 rounded-lg text-sm font-bold transition ${btn.class}`;
+                b.innerText = btn.text;
+                b.onclick = () => {
+                    closeModal();
+                    if (btn.onClick) btn.onClick();
+                };
+                actionsContainer.appendChild(b);
+            });
+
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const icon = document.getElementById('theme-toggle-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                icon.className = 'fa-solid fa-sun text-amber-400 text-lg';
+            } else {
+                icon.className = 'fa-solid fa-moon text-lg';
+            }
+        }
+
+        // Initialize App on Page Load
+        window.onload = function() { renderCategoryCards(); updateExperiment();
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        };
+    </script>
+</body>
+</html>
