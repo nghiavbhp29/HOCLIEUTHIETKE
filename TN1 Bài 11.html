@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thí nghiệm trang 53 - Bài 11 - KHTN 9</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .wire {
+            stroke-dasharray: 8;
+            animation: flow 0.8s linear infinite;
+            animation-play-state: paused;
+        }
+        .wire.active {
+            animation-play-state: running;
+        }
+        @keyframes flow {
+            from { stroke-dashoffset: 16; }
+            to { stroke-dashoffset: 0; }
+        }
+        .glow {
+            filter: drop-shadow(0 0 30px rgba(250, 204, 21, 0.9)) drop-shadow(0 0 15px rgba(250, 204, 21, 0.8));
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <header class="bg-slate-800 border-b border-slate-700 py-4 px-6 shadow-md flex flex-wrap justify-between items-center">
+        <div>
+            <h1 class="text-xl md:text-2xl font-bold text-cyan-400 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-amber-400"></i> Thí nghiệm trang 53 - Bài 11 - KHTN 9
+            </h1>
+            <p class="text-xs text-amber-400/90 font-medium mt-1"><i class="fa-solid fa-user-pen mr-1"></i> Thiết kế: Bùi Thị Nghĩa</p>
+        </div>
+        <div class="mt-2 md:mt-0 flex gap-2">
+            <button onclick="openGuide()" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-question text-cyan-400"></i> Hướng dẫn
+            </button>
+            <button onclick="resetExperiment()" class="bg-rose-600/80 hover:bg-rose-600 px-3 py-1.5 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-right"></i> Làm lại
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Circuit Simulation -->
+        <div class="lg:col-span-2 flex flex-col gap-4">
+            <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-4 md:p-6 shadow-xl flex flex-col relative overflow-hidden">
+                <div class="absolute top-4 left-4 z-10 flex items-center gap-2 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-700 text-xs">
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500" id="statusDot"></span>
+                    <span id="badgeStatusText">Mạch đang hở</span>
+                </div>
+
+                <!-- SVG Circuit Diagram with precise lamp and realistic switch -->
+                <div class="w-full h-80 md:h-[420px] flex items-center justify-center my-auto">
+                    <svg viewBox="0 0 750 420" class="w-full h-full max-h-[420px]" id="circuitSvg">
+                        <!-- Wires -->
+                        <path id="wire1" d="M 120 100 L 220 100" class="wire stroke-slate-500" stroke-width="4" fill="none"/>
+                        <path id="wire2" d="M 330 100 L 580 100" class="wire stroke-slate-500" stroke-width="4" fill="none"/>
+                        <path id="wire3" d="M 580 100 L 580 300" class="wire stroke-slate-500" stroke-width="4" fill="none"/>
+                        <path id="wire4" d="M 580 300 L 120 300" class="wire stroke-slate-500" stroke-width="4" fill="none"/>
+                        <path id="wire5" d="M 120 300 L 120 180" class="wire stroke-slate-500" stroke-width="4" fill="none"/>
+                        <path id="wire6" d="M 120 120 L 120 100" class="wire stroke-slate-500" stroke-width="4" fill="none"/>
+
+                        <!-- COMPONENTS -->
+                        <!-- 1. DC Power Supply 12V -->
+                        <g transform="translate(100, 120)">
+                            <rect x="-12" y="-20" width="44" height="60" rx="8" fill="#1e293b" stroke="#475569" stroke-width="2"/>
+                            <text x="10" y="-30" font-size="12" fill="#94a3b8" text-anchor="middle" font-weight="bold">Nguồn 12V</text>
+                            <line x1="0" y1="-10" x2="20" y2="-10" stroke="#ef4444" stroke-width="4"/>
+                            <text x="26" y="-6" font-size="14" fill="#ef4444" font-weight="bold">+</text>
+                            <line x1="3" y1="20" x2="17" y2="20" stroke="#38bdf8" stroke-width="4"/>
+                            <line x1="6" y1="25" x2="14" y2="25" stroke="#38bdf8" stroke-width="4"/>
+                            <text x="26" y="24" font-size="14" fill="#38bdf8" font-weight="bold">-</text>
+                        </g>
+
+                        <!-- 2. Knife Switch K -->
+                        <g transform="translate(220, 100)" id="switchGroup" class="cursor-pointer" onclick="toggleSwitch()">
+                            <text x="55" y="-38" font-size="13" fill="#fbbf24" font-weight="bold" text-anchor="middle">Công tắc K</text>
+                            <rect x="-8" y="-6" width="16" height="12" rx="3" fill="#475569" stroke="#64748b" stroke-width="1.5"/>
+                            <circle cx="0" cy="0" r="4" fill="#cbd5e1"/>
+                            <rect x="102" y="-8" width="16" height="16" rx="3" fill="#b45309" stroke="#d97706" stroke-width="1.5"/>
+                            <circle cx="110" cy="0" r="5" fill="#fbbf24"/>
+                            
+                            <g id="switchBlade" style="transform-origin: 0px 0px; transform: rotate(-38deg); transition: transform 0.3s ease;">
+                                <path d="M 28 -4 L 92 -4 C 95 -4 98 -2 98 2 L 98 10 C 98 14 95 16 92 16 L 28 16 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.5"/>
+                                <rect x="-6" y="-5" width="112" height="10" rx="2" fill="#fbbf24" stroke="#d97706" stroke-width="1"/>
+                                <circle cx="110" cy="0" r="6" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/>
+                            </g>
+                        </g>
+
+                        <!-- 3. Lamp Symbol matching user request -->
+                        <g transform="translate(580, 200)" id="lampGroup">
+                            <circle cx="0" cy="0" r="35" fill="#facc15" opacity="0" id="lampGlow" class="glow"/>
+                            <circle cx="0" cy="0" r="24" fill="#1e293b" stroke="#facc15" stroke-width="3" id="lampCircle"/>
+                            <path d="M -10 -5 Q 0 -15 10 -5 Q 0 15 -10 -5" stroke="#facc15" stroke-width="2.5" fill="none" id="lampFilament"/>
+                            <circle cx="0" cy="0" r="6" fill="#fef08a" id="lampCore" opacity="0"/>
+                            
+                            <text x="48" y="-5" font-size="13" fill="#e2e8f0" font-weight="bold">Bóng đèn 2,5V</text>
+                            <text x="48" y="16" font-size="12" fill="#fbbf24" font-weight="semibold" id="lampStatusText">Tắt</text>
+                        </g>
+
+                        <!-- 4. Resistor R1/R2/R3 -->
+                        <g transform="translate(350, 300)">
+                            <rect x="-50" y="-18" width="100" height="36" rx="6" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                            <path d="M -40 0 L -30 -12 L -20 12 L -10 -12 L 0 12 L 10 -12 L 20 12 L 30 -12 L 40 0" stroke="#f43f5e" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                            <text x="0" y="-26" font-size="14" fill="#38bdf8" font-weight="bold" text-anchor="middle" id="resistorLabel">Điện trở R1</text>
+                            <text x="0" y="32" font-size="11" fill="#94a3b8" text-anchor="middle" id="resistorValueText">10 Ω (Nhỏ)</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- Controls Bar -->
+                <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 mt-2">
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-semibold text-slate-300">Chọn điện trở:</span>
+                        <div class="flex gap-2" id="resistorSelector">
+                            <button onclick="selectResistor(1)" id="btnR1" class="px-3 py-1.5 rounded-lg text-sm font-bold bg-cyan-600 text-white shadow transition flex items-center gap-1.5">
+                                R1 (10Ω)
+                            </button>
+                            <button onclick="selectResistor(2)" id="btnR2" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 transition flex items-center gap-1.5">
+                                R2 (20Ω)
+                            </button>
+                            <button onclick="selectResistor(3)" id="btnR3" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 transition flex items-center gap-1.5">
+                                R3 (30Ω)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleSwitch()" id="switchBtn" class="px-5 py-2.5 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg transition flex items-center gap-2">
+                            <i class="fa-solid fa-power-off"></i> <span id="switchBtnText">Đóng Công Tắc (Khóa Mạch)</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-4">
+            <div class="bg-slate-800/90 border border-slate-700 rounded-2xl p-5 shadow-xl flex flex-col justify-between flex-1">
+                <div>
+                    <h2 class="text-lg font-bold text-cyan-400 mb-3 flex items-center gap-2 border-b border-slate-700 pb-2">
+                        <i class="fa-solid fa-clipboard-list text-amber-400"></i> Bảng 11.1 - Ghi Nhận Kết Quả
+                    </h2>
+                    <p class="text-xs text-slate-400 mb-4">Quan sát độ sáng của bóng đèn khi mắc lần lượt các điện trở vào mạch.</p>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse">
+                            <thead>
+                                <tr class="bg-slate-700/60 text-slate-300 text-xs uppercase">
+                                    <th class="p-2.5 rounded-l-lg">Điện trở</th>
+                                    <th class="p-2.5">Cường độ dòng điện</th>
+                                    <th class="p-2.5 rounded-r-lg">Độ sáng đèn</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-700/50" id="resultTableBody">
+                                <tr id="rowR1">
+                                    <td class="p-2.5 font-bold text-cyan-300">R1 (10Ω)</td>
+                                    <td class="p-2.5 text-slate-300" id="valI1">--</td>
+                                    <td class="p-2.5" id="valBright1"><span class="text-slate-500 italic">Chưa đo</span></td>
+                                </tr>
+                                <tr id="rowR2">
+                                    <td class="p-2.5 font-bold text-cyan-300">R2 (20Ω)</td>
+                                    <td class="p-2.5 text-slate-300" id="valI2">--</td>
+                                    <td class="p-2.5" id="valBright2"><span class="text-slate-500 italic">Chưa đo</span></td>
+                                </tr>
+                                <tr id="rowR3">
+                                    <td class="p-2.5 font-bold text-cyan-300">R3 (30Ω)</td>
+                                    <td class="p-2.5 text-slate-300" id="valI3">--</td>
+                                    <td class="p-2.5" id="valBright3"><span class="text-slate-500 italic">Chưa đo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Live Meter Reading Box -->
+                    <div class="mt-5 p-4 bg-slate-900/80 rounded-xl border border-slate-700/80 flex flex-col gap-2">
+                        <div class="flex justify-between items-center text-xs text-slate-400 font-semibold">
+                            <span>THÔNG SỐ TRỰC TIẾP</span>
+                            <span id="statusLiveBadge" class="text-rose-400 font-bold">Mạch hở (Ngắt)</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-center">
+                            <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                                <div class="text-xs text-slate-400">Dòng điện (I)</div>
+                                <div class="text-lg font-mono font-bold text-emerald-400 mt-1" id="liveAmperage">0.00 A</div>
+                            </div>
+                            <div class="bg-slate-800 p-2.5 rounded-lg border border-slate-700">
+                                <div class="text-xs text-slate-400">Độ sáng đèn</div>
+                                <div class="text-lg font-bold text-amber-400 mt-1" id="liveBrightness">Tắt</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conclusion Trigger -->
+                <div class="mt-5 pt-4 border-t border-slate-700">
+                    <button onclick="checkConclusion()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-2.5 px-4 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-lightbulb"></i> Tổng kết tính chất điện trở
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- GUIDE MODAL -->
+    <div id="guideModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="text-lg font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-question text-cyan-400"></i> Hướng Dẫn Thí Nghiệm
+                </h3>
+                <button onclick="closeGuide()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div class="text-slate-300 text-sm space-y-3 leading-relaxed">
+                <p><strong>Bước 1:</strong> Chọn điện trở <span class="text-cyan-300 font-bold">R1</span> (10Ω) đưa vào mạch điện.</p>
+                <p><strong>Bước 2:</strong> Nhấn nút <strong>Đóng Công Tắc</strong> để khép kín mạch điện.</p>
+                <p><strong>Bước 3:</strong> Quan sát độ sáng bóng đèn rực rỡ và ghi nhận thông số vào bảng.</p>
+                <p><strong>Bước 4:</strong> Lần lượt thay thế bằng <span class="text-cyan-300 font-bold">R2</span> (20Ω) và <span class="text-cyan-300 font-bold">R3</span> (30Ω) để so sánh sự thay đổi độ sáng.</p>
+                <p class="text-amber-300 text-xs font-medium pt-1"><i class="fa-solid fa-user-pen mr-1"></i> Thiết kế: Bùi Thị Nghĩa</p>
+            </div>
+            <button onclick="closeGuide()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 px-4 rounded-xl text-sm transition">Đã hiểu, bắt đầu thí nghiệm</button>
+        </div>
+    </div>
+
+    <!-- CONCLUSION MODAL -->
+    <div id="conclusionModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-4">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-award"></i> Tổng Kết Thí Nghiệm
+                </h3>
+                <button onclick="closeConclusion()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            <div class="text-slate-300 text-sm space-y-3 leading-relaxed" id="conclusionContent">
+                <!-- Dynamic Content -->
+            </div>
+            <button onclick="closeConclusion()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-4 rounded-xl text-sm transition">Hoàn thành</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        let currentResistor = 1;
+        let isSwitchClosed = false;
+
+        const resistorData = {
+            1: { name: "R1", val: 10, label: "10 Ω (Nhỏ)", current: "0.80 A", brightness: "Sáng bình thường", level: 2 },
+            2: { name: "R2", val: 20, label: "20 Ω (Trung bình)", current: "0.50 A", brightness: "Sáng mờ", level: 1.2 },
+            3: { name: "R3", val: 30, label: "30 Ω (Lớn)", current: "0.35 A", brightness: "Sáng rất mờ", level: 0.6 }
+        };
+
+        let recorded = { 1: false, 2: false, 3: false };
+
+        function selectResistor(id) {
+            currentResistor = id;
+            for(let i=1; i<=3; i++) {
+                const btn = document.getElementById(`btnR${i}`);
+                if(i === id) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-sm font-bold bg-cyan-600 text-white shadow transition flex items-center gap-1.5";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 transition flex items-center gap-1.5";
+                }
+            }
+
+            document.getElementById('resistorLabel').textContent = `Điện trở R${id}`;
+            document.getElementById('resistorValueText').textContent = resistorData[id].label;
+            updateCircuitState();
+        }
+
+        function toggleSwitch() {
+            isSwitchClosed = !isSwitchClosed;
+            const blade = document.getElementById('switchBlade');
+            const btnText = document.getElementById('switchBtnText');
+            const btn = document.getElementById('switchBtn');
+
+            if(isSwitchClosed) {
+                blade.style.transform = "rotate(0deg)";
+                btnText.textContent = "Ngắt Công Tắc (Mở Mạch)";
+                btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg transition flex items-center gap-2";
+            } else {
+                blade.style.transform = "rotate(-38deg)";
+                btnText.textContent = "Đóng Công Tắc (Khóa Mạch)";
+                btn.className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg transition flex items-center gap-2";
+            }
+            updateCircuitState();
+        }
+
+        function updateCircuitState() {
+            const wires = document.querySelectorAll('.wire');
+            const lampGlow = document.getElementById('lampGlow');
+            const lampCore = document.getElementById('lampCore');
+            const lampStatusText = document.getElementById('lampStatusText');
+            const liveAmperage = document.getElementById('liveAmperage');
+            const liveBrightness = document.getElementById('liveBrightness');
+            const statusLiveBadge = document.getElementById('statusLiveBadge');
+            const statusDot = document.getElementById('statusDot');
+            const badgeStatusText = document.getElementById('badgeStatusText');
+
+            if(isSwitchClosed) {
+                wires.forEach(w => w.classList.add('active'));
+                const data = resistorData[currentResistor];
+                let opacityVal = data.level === 2 ? 1.0 : (data.level === 1.2 ? 0.8 : 0.5);
+                lampGlow.style.opacity = opacityVal;
+                lampCore.style.opacity = opacityVal;
+                
+                lampStatusText.textContent = data.brightness;
+                lampStatusText.setAttribute('fill', '#facc15');
+
+                liveAmperage.textContent = data.current;
+                liveBrightness.textContent = data.brightness;
+                statusLiveBadge.textContent = "Mạch kín (Đang chạy)";
+                statusLiveBadge.className = "text-emerald-400 font-bold";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                badgeStatusText.textContent = "Mạch kín";
+
+                recorded[currentResistor] = true;
+                document.getElementById(`valI${currentResistor}`).textContent = data.current;
+                document.getElementById(`valBright${currentResistor}`).innerHTML = `<span class="text-amber-400 font-semibold">${data.brightness}</span>`;
+
+            } else {
+                wires.forEach(w => w.classList.remove('active'));
+                lampGlow.style.opacity = 0;
+                lampCore.style.opacity = 0;
+                
+                lampStatusText.textContent = "Tắt";
+                lampStatusText.setAttribute('fill', '#fbbf24');
+
+                liveAmperage.textContent = "0.00 A";
+                liveBrightness.textContent = "Tắt";
+                statusLiveBadge.textContent = "Mạch hở (Ngắt)";
+                statusLiveBadge.className = "text-rose-400 font-bold";
+                statusDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+                badgeStatusText.textContent = "Mạch đang hở";
+            }
+        }
+
+        function openGuide() {
+            document.getElementById('guideModal').classList.remove('hidden');
+        }
+
+        function closeGuide() {
+            document.getElementById('guideModal').classList.add('hidden');
+        }
+
+        function openConclusion() {
+            document.getElementById('conclusionModal').classList.remove('hidden');
+        }
+
+        function closeConclusion() {
+            document.getElementById('conclusionModal').classList.add('hidden');
+        }
+
+        function checkConclusion() {
+            const modalContent = document.getElementById('conclusionContent');
+            if(recorded[1] && recorded[2] && recorded[3]) {
+                modalContent.innerHTML = `
+                    <p class="text-emerald-300 font-bold mb-2"><i class="fa-solid fa-circle-check"></i> Chúc mừng! Bạn đã hoàn thành thí nghiệm chính xác.</p>
+                    <p><strong>Nhận xét:</strong> Khi lần lượt thay các điện trở R1, R2, R3 (có giá trị tăng dần từ 10 Ω đến 30 Ω) vào mạch:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200 mt-2">
+                        <li>Cường độ dòng điện giảm dần: 0.80 A -> 0.50 A -> 0.35 A.</li>
+                        <li>Độ sáng của đèn mờ dần tương ứng với dòng điện giảm.</li>
+                    </ul>
+                    <div class="mt-3 p-4 bg-slate-900 rounded-xl border border-slate-700 text-cyan-300 font-medium space-y-2">
+                        <div class="flex items-center gap-2.5 text-cyan-200 font-semibold">
+                            <i class="fa-solid fa-shield-halved text-amber-400 text-lg"></i>
+                            <span>Điện trở có tác dụng cản trở dòng điện.</span>
+                        </div>
+                        <div class="flex items-center gap-2.5 text-cyan-200 font-semibold">
+                            <i class="fa-solid fa-bolt-lightning text-cyan-400 text-lg"></i>
+                            <span>Điện trở khác nhau có tác dụng cản trở dòng điện khác nhau.</span>
+                        </div>
+                    </div>
+                    <p class="text-amber-400/90 text-xs font-semibold pt-2 text-right"><i class="fa-solid fa-user-pen mr-1"></i> Thiết kế: Bùi Thị Nghĩa</p>
+                `;
+            } else {
+                modalContent.innerHTML = `
+                    <p class="text-amber-300 font-bold mb-2"><i class="fa-solid fa-triangle-exclamation"></i> Bạn chưa đo đủ 3 điện trở!</p>
+                    <p>Hãy lần lượt chọn đủ R1, R2, R3, đóng công tắc để ghi nhận số liệu đầy đủ vào Bảng 11.1 trước khi xem tổng kết nhé.</p>
+                `;
+            }
+            openConclusion();
+        }
+
+        function resetExperiment() {
+            currentResistor = 1;
+            isSwitchClosed = false;
+            recorded = { 1: false, 2: false, 3: false };
+            
+            document.getElementById('switchBlade').style.transform = "rotate(-38deg)";
+            document.getElementById('switchBtnText').textContent = "Đóng Công Tắc (Khóa Mạch)";
+            document.getElementById('switchBtn').className = "px-5 py-2.5 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg transition flex items-center gap-2";
+
+            selectResistor(1);
+            updateCircuitState();
+
+            for(let i=1; i<=3; i++) {
+                document.getElementById(`valI${i}`).textContent = "--";
+                document.getElementById(`valBright${i}`).innerHTML = `<span class="text-slate-500 italic">Chưa đo</span>`;
+            }
+        }
+
+        window.onload = function() {
+            selectResistor(1);
+        };
+    </script>
+</body>
+</html>
